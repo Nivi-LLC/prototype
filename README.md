@@ -1,10 +1,33 @@
-# NIVI Passports
+# NIVI PIOS — Product Intelligence Operating System
 
-Shareable **Product Intelligence Passport** prototype for India coffee.
+> The AI Operating System for Trusted Global Trade.
 
-**Scenario:** Continental Coffee shares one secure link with a European coffee roaster (Hamburg) for Arabica green beans sourced from **Farm 147**, Somwarpet, Kodagu, Karnataka.
+Prototype of **NIVI PIOS** for Continental Coffee · Farm 147 · batch `CC-AR-2026-00481` (Kodagu Arabica → Hamburg).
 
-Instead of 50 PDFs, the importer sees farm GPS, growing-season NDVI/weather, harvest evidence, Continental processing, lab AI decisions, container IoT, ocean guidance, customs match, and a long-term supplier recommendation.
+This is not a digital passport archive. It answers:
+
+1. What is happening?
+2. Why?
+3. What should I do next?
+4. What is the financial impact?
+5. How confident is the AI?
+6. What evidence supports it?
+7. What if I choose differently?
+8. Compared with what?
+
+## Domains
+
+| Tab | Intelligence |
+| --- | --- |
+| **Exec** | Business health, revenue opportunity / at risk, primary AI decision |
+| **Grow** | Growing decision with yield / ₹ impact |
+| **Harvest** | Grade, premium, buyer match |
+| **Chain** | Voyage / intervene-or-hold |
+| **Docs** | Decision evidence pack |
+| **Buy** | Procurement recommendation |
+| **Decide** | Scenario simulation engine |
+| **Memory** | Product Memory™ lifecycle |
+| **Ask** | AI Copilot (Farm 147 only) |
 
 ## Open locally
 
@@ -17,31 +40,21 @@ Visit [http://localhost:8080](http://localhost:8080).
 
 **Live site:** [https://nivi-llc.github.io/prototype/](https://nivi-llc.github.io/prototype/)
 
-**Password:** `9999` (client-side gate for the stakeholder demo — not real security).
+**Password:** `9999` (client-side gate — not real security).
 
-### Ask NIVI Intelligence
+### AI Copilot
 
-1. Open the **Ask NIVI** tab.
-2. Paste a session key and click **Start 3 min** (session auto-clears after 3 minutes).
-3. Ask about Farm 147 only — crop health, NDVI/heatmap, moisture, lab/EU risk, voyage, EUDR, accept/reject.
+1. Open **Ask**
+2. Paste session key → **Start 3 min**
+3. Ask decision questions for this batch only
 
-Answers are scoped to the dummy passport in `js/data.js` (including `riskFactors`) via a strict farm-only system prompt.
-
-Chat requests go through a same-team Netlify proxy (`/api/ask` on [nivi-passports.netlify.app](https://nivi-passports.netlify.app)) so the browser can reach the model API without CORS errors.
-
-Farm-only access control is enforced on the **server** (not just the prompt):
-- Client sends `question` + short history only — it cannot set the system prompt or passport context
-- Input allow/block gate (jailbreaks, other farms/origins, off-topic)
-- Output filter before the reply is returned
-- Matching client gate in `js/farm-guard.js` for instant refusals
-
-Redeploy the proxy after function changes:
+Proxy: [nivi-passports.netlify.app/api/ask](https://nivi-passports.netlify.app/api/ask)
 
 ```bash
 npx netlify-cli deploy --prod --dir=. --functions=netlify/functions
 ```
 
-If you change `js/data.js`, refresh the server copy:
+Refresh server passport context after `js/data.js` changes:
 
 ```bash
 node -e "const fs=require('fs');const w={};new Function('window',fs.readFileSync('js/data.js','utf8'))(w);fs.writeFileSync('netlify/functions/_shared/passport.json',JSON.stringify(w.PASSPORT,null,2));"
@@ -51,27 +64,18 @@ node -e "const fs=require('fs');const w={};new Function('window',fs.readFileSync
 
 | Field | Value |
 | --- | --- |
-| Brand | NIVI Passports |
+| Platform | NIVI PIOS |
 | Processor | Continental Coffee |
 | Farm | Farm 147 · Ramesh Gowda |
 | Batch | CC-AR-2026-00481 |
-| PO / Shipment | PO-2026-00981 / SHIP-2026-00081 |
-| Product | Arabica Plantation AA · 200 MT |
-| Destination | Hamburg, Germany |
+| Primary decision | Accept shipment (94% confidence) |
 
-All values in `js/data.js` are **dummy data** for demonstration.
+All values in `js/data.js` are **dummy data**.
 
 ## Stack
 
-Static HTML + CSS + vanilla JS. No build step.
+Static HTML + CSS + vanilla JS.
 
-- `index.html` — Tanee-style farm monitoring shell
-- `css/passport.css` — light dashboard system
-- `js/data.js` — dummy passport model
-- `js/gate.js` — password gate (`9999`)
-- `js/passport.js` — sidebar view switching + data bind
-- `assets/` — farm NDVI map, NDVI chart, weather panel, beans imagery
-
-## Design notes
-
-Tanee-inspired light dashboard with **NIVI Passports** brand on the left header, named top-center navigation (Overview · Farm Map · Growing · Harvest · Chain · Trust · Future), monitoring cards, sector map, and a Future Intelligence view covering AI agents, EUDR digital twins, rural IoT, open APIs, carbon reporting, and first-mile integrity.
+- `js/pios.js` — decision / memory / simulation rendering
+- `js/data.js` — PIOS model (decisions, predictions, Product Memory)
+- `js/ask-nivi.js` + Netlify `/api/ask` — farm-scoped copilot

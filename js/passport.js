@@ -54,7 +54,13 @@
 
     const title = document.getElementById("view-title");
     if (title && active) {
-      title.textContent = active.dataset.title || "NIVI Passports";
+      title.textContent = active.dataset.title || "NIVI PIOS";
+    }
+    const kicker = document.getElementById("view-kicker");
+    if (kicker && active) {
+      kicker.textContent =
+        active.dataset.kicker ||
+        "What should we do next — with confidence, evidence, and money attached.";
     }
 
     if (activeBtn && typeof activeBtn.scrollIntoView === "function") {
@@ -74,7 +80,7 @@
     });
 
     const hash = (location.hash || "").replace("#", "");
-    const allowed = ["overview", "map", "grow", "harvest", "chain", "docs", "trust", "future", "ask"];
+    const allowed = ["overview", "map", "grow", "harvest", "chain", "docs", "buy", "decide", "memory", "ask"];
     setView(allowed.includes(hash) ? hash : "overview");
   }
 
