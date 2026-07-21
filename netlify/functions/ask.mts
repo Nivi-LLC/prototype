@@ -1,5 +1,4 @@
 import {
-  REFUSAL,
   buildSystemPrompt,
   gateAnswer,
   gateQuestion,
@@ -131,7 +130,7 @@ export default async (req: Request) => {
 
   const gated = gateQuestion(question, history.length > 0);
   if (!gated.ok) {
-    return sseResponse(req, REFUSAL);
+    return sseResponse(req, gated.refusal);
   }
 
   // Server owns system prompt + passport context. Client cannot override.
@@ -165,7 +164,7 @@ export default async (req: Request) => {
   }
 
   const raw = await readUpstreamText(upstream);
-  const safe = gateAnswer(raw || REFUSAL);
+  const safe = gateAnswer(raw, question);
   return sseResponse(req, safe);
 };
 
