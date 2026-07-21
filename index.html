@@ -658,9 +658,33 @@
           <!-- ASK NIVI -->
           <section class="view" id="view-ask" data-title="Ask NIVI Intelligence">
             <p class="section-intro">
-              Conversational product intelligence for this passport. Ask about Farm 147, crop health, lab risk,
-              EUDR, carbon, or whether to accept the shipment—demo replies use synthetic batch data.
+              Ask about Farm 147 only — crop health, NDVI/heatmap, moisture, lab/EU risk, voyage, EUDR, and accept/reject.
+              Paste a temporary NVIDIA API key; each key session lasts 3 minutes, then clears.
             </p>
+
+            <div class="ask-key" id="ask-key-panel">
+              <div class="ask-key__row">
+                <label class="ask-key__label" for="ask-api-key">NVIDIA API key</label>
+                <span class="ask-key__timer" id="ask-timer">No active session</span>
+              </div>
+              <div class="ask-key__row ask-key__controls">
+                <input
+                  class="ask-key__input"
+                  id="ask-api-key"
+                  type="password"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="Paste NVIDIA API key for a 3-minute demo session"
+                />
+                <button class="ask-key__btn" type="button" id="ask-key-save">Start 3 min</button>
+                <button class="ask-key__btn ask-key__btn--ghost" type="button" id="ask-key-clear">Clear</button>
+              </div>
+              <p class="ask-key__note">
+                Key stays in this browser tab only (sessionStorage). Model: z-ai/glm-5.2 via NVIDIA integrate API.
+                Revoke the key after the demo.
+              </p>
+            </div>
+
             <div class="ask">
               <div class="ask__thread" id="ask-thread" aria-live="polite"></div>
               <div class="ask__suggestions" id="ask-suggestions"></div>
@@ -669,7 +693,7 @@
                   class="ask__input"
                   id="ask-input"
                   type="text"
-                  placeholder="Ask NIVI about this coffee passport…"
+                  placeholder="Ask NIVI about Farm 147 / this batch…"
                   maxlength="400"
                 />
                 <button class="ask__send" type="submit">Send</button>

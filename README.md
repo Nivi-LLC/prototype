@@ -19,8 +19,15 @@ Visit [http://localhost:8080](http://localhost:8080).
 
 **Password:** `9999` (client-side gate for the stakeholder demo — not real security).
 
-### Ask NIVI Intelligence
-Open the **Ask NIVI** tab. Type a question or tap a suggestion chip. Replies are offline/scripted against this passport’s dummy data (crop health, EUDR, accept shipment, carbon, harvest, voyage). No API key required for the demo.
+### Ask NIVI Intelligence (NVIDIA GLM)
+
+1. Open the **Ask NIVI** tab.
+2. Paste a **NVIDIA API key** and click **Start 3 min** (session auto-clears after 3 minutes).
+3. Ask about Farm 147 only — crop health, NDVI/heatmap, moisture, lab/EU risk, voyage, EUDR, accept/reject.
+
+Uses `z-ai/glm-5.2` at `https://integrate.api.nvidia.com/v1` with a strict farm-only system prompt and the dummy passport in `js/data.js` (including `riskFactors`). Key is stored in `sessionStorage` only — revoke after demos.
+
+If the browser blocks the NVIDIA API (CORS), use a short-lived local proxy or test in an environment that allows the request.
 
 ## Demo identity
 

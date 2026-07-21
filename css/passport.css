@@ -1080,6 +1080,87 @@ a {
   }
 }
 
+/* Ask NIVI key session */
+.ask-key {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 0.9rem 1rem;
+  margin-bottom: 12px;
+}
+
+.ask-key__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.ask-key__controls {
+  margin-top: 0.55rem;
+}
+
+.ask-key__label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ask-key__timer {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.ask-key__timer.is-live {
+  color: var(--green-deep);
+}
+
+.ask-key__timer.is-warn {
+  color: #b45309;
+}
+
+.ask-key__input {
+  flex: 1;
+  min-width: 200px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.7rem 0.95rem;
+  background: #fff;
+}
+
+.ask-key__btn {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(145deg, var(--green), var(--green-deep));
+}
+
+.ask-key__btn--ghost {
+  background: #fff;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.ask-key__note {
+  margin: 0.65rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.ask__composer.is-busy {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
 /* Ask NIVI chat */
 .ask {
   display: flex;

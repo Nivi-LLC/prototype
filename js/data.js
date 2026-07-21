@@ -188,6 +188,32 @@ window.PASSPORT = {
     pricePremium: "4.8%",
     recommendation: "Increase annual contract by 30%.",
   },
+  riskFactors: {
+    cropHealth: { value: "95%", level: "Low", note: "Dense canopy; localized NDVI stress <2% of Block A north edge" },
+    ndviHeatmap: {
+      densePct: 97.37,
+      moderatePct: 1.42,
+      sparsePct: 1.21,
+      stressPatch: "Yellow/red edge on north boundary — moisture stress, not canopy failure",
+    },
+    diseaseAlerts: 0,
+    weatherRisks: 0,
+    harvestMoisture: { value: "11.2%", level: "Low", band: "Export target 10–12%" },
+    labEu: { acceptancePct: 99, rejectionPct: 0.8, level: "Low", recommendation: "Approve Shipment" },
+    voyageQuality: { level: "None", tempC: 18.4, humidity: 55, shock: 0, doorOpenings: 0 },
+    eudr: {
+      status: "Ready path",
+      parcelLinked: true,
+      farm: "Farm 147 Block A",
+      proof: "GPS polygon 18 vertices + satellite canopy history",
+    },
+    carbonEstimate: {
+      batchCO2eTonnes: 1.84,
+      scope: "Farm gate → Hamburg",
+      note: "Demo estimate from growing-season + voyage sensors",
+    },
+    overall: "Low",
+  },
   journey: [
     { id: "farm", label: "Farm" },
     { id: "grow", label: "Grow" },

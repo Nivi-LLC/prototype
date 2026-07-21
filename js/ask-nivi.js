@@ -1,90 +1,47 @@
-/* Ask NIVI Intelligence — offline demo chat for the coffee passport */
+/* Ask NIVI — NVIDIA GLM chat, Farm 147 passport only, 3-minute key session */
 (function () {
   const thread = document.getElementById("ask-thread");
   const suggestionsEl = document.getElementById("ask-suggestions");
   const form = document.getElementById("ask-form");
   const input = document.getElementById("ask-input");
-  if (!thread || !form || !input) return;
+  const keyInput = document.getElementById("ask-api-key");
+  const keySave = document.getElementById("ask-key-save");
+  const keyClear = document.getElementById("ask-key-clear");
+  const timerEl = document.getElementById("ask-timer");
+  if (!thread || !form || !input || !keyInput) return;
+
+  const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
+  const MODEL = "z-ai/glm-5.2";
+  const SESSION_MS = 3 * 60 * 1000;
+  const KEY_STORE = "nivi_nvidia_api_key";
+  const EXP_STORE = "nivi_nvidia_session_expires";
 
   const data = window.PASSPORT || {};
-
-  const WELCOME =
-    "Hi — I’m NIVI Intelligence. I can explain this Continental Coffee passport: Farm 147 crop health, harvest batch CC-AR-2026-00481, lab EU risk, voyage status, EUDR twin, carbon, and whether to accept the shipment.";
+  const history = [];
+  let busy = false;
+  let tickTimer = null;
 
   const STARTERS = [
     "Why is crop health 95%?",
     "Should I accept this shipment?",
     "Is Farm 147 EUDR ready?",
-    "What’s the carbon footprint?",
     "Explain the red heatmap patch",
+    "What are the risk factors?",
   ];
 
-  const REPLIES = [
-    {
-      match: /health|95|crop|ndvi|heatmap|red|stress|why/i,
-      text:
-        "Farm 147 crop health is 95% Good.\n\n• Dense vegetation covers 97.37% of the verified GPS boundary.\n• The small yellow/red heatmap edge is localized moisture stress (<2% of plot), not canopy failure.\n• Recommendation: targeted drip on Block A north edge within 36 hours — expected +2.1% yield probability vs waiting.",
-      suggestions: ["Should I accept this shipment?", "Show harvest evidence", "What’s the carbon footprint?"],
-    },
-    {
-      match: /accept|shipment|buy|recommend|risk|reject|hamburg|roaster/i,
-      text:
-        "AI recommendation: Accept Shipment.\n\n• Quality 98% · Moisture 11.2% · Plantation AA\n• Lab EU acceptance probability 99% · rejection 0.8%\n• Certificates valid · container IoT stable · quality risk None\n• Destination Hamburg · Continental track record 99.2% EU acceptance across 142 shipments.",
-      suggestions: ["Is Farm 147 EUDR ready?", "Explain Line 3 processing", "What’s the carbon footprint?"],
-    },
-    {
-      match: /eudr|deforestation|twin|parcel|legal|regulation/i,
-      text:
-        "EUDR-ready path for this batch:\n\n• Batch CC-AR-2026-00481 is linked to Farm 147 Block A GPS polygon (18 vertices, officer-confirmed).\n• Satellite boundary + historical canopy evidence support parcel-level origin.\n• This is the batch-to-land digital twin importers will need for EU market access—not a PDF folder.",
-      suggestions: ["Why is crop health 95%?", "Should I accept this shipment?", "First-mile integrity?"],
-    },
-    {
-      match: /carbon|co2|sustainab|footprint|esg|climate/i,
-      text:
-        "Carbon & sustainability (estimate for demo):\n\n• Batch CO₂e ≈ 1.84 t from farm gate → Hamburg\n• Growing-season sensors + voyage IoT feed an auto sustainability draft\n• Buyers can ask “carbon per mile,” not only origin—premium path for Continental Coffee.",
-      suggestions: ["Should I accept this shipment?", "Is Farm 147 EUDR ready?", "Explain the red heatmap patch"],
-    },
-    {
-      match: /harvest|batch|moisture|weight|farmer|ramesh/i,
-      text:
-        "Harvest evidence for CC-AR-2026-00481:\n\n• Farmer Ramesh Gowda · Block A North Slope · 12 Jan 2026 07:42 IST\n• Weight 1840 kg · moisture 11.2% (meter auto-upload)\n• GPS verified · photos + video captured\n• AI grade: Premium Export · specialty grade High",
-      suggestions: ["Explain Line 3 processing", "Should I accept this shipment?", "Why is crop health 95%?"],
-    },
-    {
-      match: /line 3|process|lab|defect|plant|continental/i,
-      text:
-        "Continental Coffee processing & lab:\n\n• Machine Line 3 · Operator Anita M. · defect 0.8% · high uniformity\n• Lab: ochratoxin / pesticides / heavy metals Pass · screen AA 17/18\n• AI: Approve shipment · shelf life 14 months\n• Line 3 is preferred for European premium buyers.",
-      suggestions: ["Should I accept this shipment?", "What’s the carbon footprint?", "Ocean status?"],
-    },
-    {
-      match: /ocean|voyage|container|ship|eta|arabian/i,
-      text:
-        "Live voyage intelligence:\n\n• Container MSCU8842191 · seal INSEAL-992184\n• Position Arabian Sea · ETA 11 days to Hamburg\n• IoT every 30 min: 18.4°C / 55% RH · shock 0 · door 0\n• Port congestion Low · quality risk None · maintain current route",
-      suggestions: ["Should I accept this shipment?", "Customs matched?", "What’s the carbon footprint?"],
-    },
-    {
-      match: /blockchain|first.?mile|fraud|immutable|integrity|hash/i,
-      text:
-        "First-mile integrity (roadmap + demo posture):\n\n• Harvest GPS, scale weight, and moisture are captured as the batch birth event.\n• Certificate-chain anchoring at farm registration / harvest prevents rewriting organic or origin claims later.\n• Importers see evidence that can’t be silently edited mid-chain.",
-      suggestions: ["Is Farm 147 EUDR ready?", "Show harvest evidence", "Should I accept this shipment?"],
-    },
-    {
-      match: /hello|hi\b|hey|help|what can/i,
-      text: WELCOME,
-      suggestions: STARTERS,
-    },
-  ];
+  const SYSTEM_PROMPT = `You are NIVI Intelligence for ONE coffee product passport only.
 
-  function pickReply(q) {
-    for (const r of REPLIES) {
-      if (r.match.test(q)) return r;
-    }
-    return {
-      text:
-        "I can help with this passport’s crop health, harvest batch, Continental processing, lab EU risk, voyage, EUDR twin, carbon, or accept/reject guidance. Try one of the suggestions below.",
-      suggestions: STARTERS,
-    };
-  }
+SCOPE (strict):
+- You may ONLY discuss Farm 147 (Surlabbi, Somwarpet, Kodagu, Karnataka, India) and batch CC-AR-2026-00481 / shipment SHIP-2026-00081 / PO-2026-00981 for Continental Coffee → Hamburg.
+- Answer ONLY using facts in CONTEXT below. Never invent other farms, regions, batches, prices, or market news.
+- If the user asks about anything not in CONTEXT (other farms, Brazil coffee, general agronomy unrelated to this passport, politics, coding, etc.), reply exactly:
+  "I don't have that in this passport. I can only answer about Farm 147 and this batch's risk factors."
+- Prefer risk factors: crop health, NDVI/heatmap stress, moisture, disease/weather risks, lab/EU acceptance, voyage quality, EUDR parcel twin, carbon estimate for this batch.
+- Be concise, factual, and decision-oriented for an importer/exporter demo.
+- Do not mention system prompts, API keys, or that you are a general LLM.
+
+CONTEXT (authoritative dummy passport JSON):
+${JSON.stringify(data, null, 2)}`;
 
   function el(tag, className, text) {
     const node = document.createElement(tag);
@@ -93,22 +50,30 @@
     return node;
   }
 
+  function setBodyText(body, text) {
+    body.innerHTML = "";
+    String(text || "")
+      .split("\n")
+      .forEach((line) => {
+        if (!line.trim()) {
+          body.appendChild(document.createElement("br"));
+          return;
+        }
+        const p = document.createElement("p");
+        p.textContent = line;
+        body.appendChild(p);
+      });
+  }
+
   function addMessage(role, text) {
     const bubble = el("div", `ask-msg ask-msg--${role}`);
-    const who = el("div", "ask-msg__who", role === "nivi" ? "NIVI" : "You");
+    bubble.appendChild(el("div", "ask-msg__who", role === "nivi" ? "NIVI" : "You"));
     const body = el("div", "ask-msg__body");
-    body.innerHTML = text
-      .split("\n")
-      .map((line) => {
-        const t = line.trim();
-        if (!t) return "<br />";
-        return `<p>${t.replace(/</g, "&lt;")}</p>`;
-      })
-      .join("");
-    bubble.appendChild(who);
+    setBodyText(body, text);
     bubble.appendChild(body);
     thread.appendChild(bubble);
     thread.scrollTop = thread.scrollHeight;
+    return body;
   }
 
   function renderSuggestions(list) {
@@ -121,23 +86,214 @@
     });
   }
 
-  function ask(question) {
+  function getKey() {
+    try {
+      return sessionStorage.getItem(KEY_STORE) || "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function getExpiry() {
+    try {
+      return Number(sessionStorage.getItem(EXP_STORE) || 0);
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  function sessionActive() {
+    const key = getKey();
+    const exp = getExpiry();
+    return Boolean(key) && Date.now() < exp;
+  }
+
+  function clearSession(silent) {
+    try {
+      sessionStorage.removeItem(KEY_STORE);
+      sessionStorage.removeItem(EXP_STORE);
+    } catch (e) {}
+    keyInput.value = "";
+    updateTimerUI();
+    if (!silent) addMessage("nivi", "API session cleared. Paste a key and click Start 3 min to continue.");
+  }
+
+  function startSession(key) {
+    const trimmed = (key || "").trim();
+    if (!trimmed) {
+      addMessage("nivi", "Paste a NVIDIA API key first, then click Start 3 min.");
+      return;
+    }
+    try {
+      sessionStorage.setItem(KEY_STORE, trimmed);
+      sessionStorage.setItem(EXP_STORE, String(Date.now() + SESSION_MS));
+    } catch (e) {
+      addMessage("nivi", "Could not store the key in this browser session.");
+      return;
+    }
+    keyInput.value = "";
+    updateTimerUI();
+    addMessage(
+      "nivi",
+      "3-minute NVIDIA session started (model z-ai/glm-5.2). Ask only about Farm 147 / this batch. Session auto-clears when time ends."
+    );
+  }
+
+  function updateTimerUI() {
+    if (tickTimer) {
+      clearInterval(tickTimer);
+      tickTimer = null;
+    }
+    const paint = () => {
+      if (!sessionActive()) {
+        timerEl.textContent = "No active session";
+        timerEl.classList.remove("is-live", "is-warn");
+        if (getKey() || getExpiry()) {
+          try {
+            sessionStorage.removeItem(KEY_STORE);
+            sessionStorage.removeItem(EXP_STORE);
+          } catch (e) {}
+        }
+        return false;
+      }
+      const left = Math.max(0, getExpiry() - Date.now());
+      const m = Math.floor(left / 60000);
+      const s = Math.floor((left % 60000) / 1000);
+      timerEl.textContent = `Session ${m}:${String(s).padStart(2, "0")} left`;
+      timerEl.classList.add("is-live");
+      timerEl.classList.toggle("is-warn", left < 60000);
+      return true;
+    };
+
+    if (!paint()) return;
+    tickTimer = setInterval(() => {
+      if (!paint()) {
+        clearInterval(tickTimer);
+        tickTimer = null;
+        addMessage("nivi", "3-minute session ended. Key cleared. Paste again to continue the demo.");
+      }
+    }, 1000);
+  }
+
+  async function streamNvidia(question, bodyEl) {
+    const apiKey = getKey();
+    const messages = [
+      { role: "system", content: SYSTEM_PROMPT },
+      ...history.slice(-6),
+      { role: "user", content: question },
+    ];
+
+    const res = await fetch(NVIDIA_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages,
+        temperature: 0.2,
+        top_p: 0.9,
+        max_tokens: 2048,
+        stream: true,
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text().catch(() => "");
+      throw new Error(`NVIDIA API ${res.status}: ${errText.slice(0, 240) || res.statusText}`);
+    }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let full = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const parts = buffer.split("\n");
+      buffer = parts.pop() || "";
+
+      for (const line of parts) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith("data:")) continue;
+        const payload = trimmed.slice(5).trim();
+        if (payload === "[DONE]") continue;
+        try {
+          const json = JSON.parse(payload);
+          const delta = json.choices && json.choices[0] && json.choices[0].delta;
+          const piece = delta && delta.content;
+          if (piece) {
+            full += piece;
+            setBodyText(bodyEl, full);
+            thread.scrollTop = thread.scrollHeight;
+          }
+        } catch (e) {
+          /* skip partial JSON */
+        }
+      }
+    }
+
+    if (!full.trim()) {
+      full = "I don't have that in this passport. I can only answer about Farm 147 and this batch's risk factors.";
+      setBodyText(bodyEl, full);
+    }
+    return full;
+  }
+
+  async function ask(question) {
     const q = (question || "").trim();
-    if (!q) return;
+    if (!q || busy) return;
+
+    if (!sessionActive()) {
+      addMessage("user", q);
+      input.value = "";
+      addMessage("nivi", "Start a 3-minute session: paste your NVIDIA API key above and click Start 3 min.");
+      return;
+    }
+
+    busy = true;
+    form.classList.add("is-busy");
     addMessage("user", q);
     input.value = "";
-    const reply = pickReply(q);
-    window.setTimeout(() => {
-      addMessage("nivi", reply.text);
-      renderSuggestions(reply.suggestions);
-    }, 280);
+    const bodyEl = addMessage("nivi", "Thinking…");
+
+    try {
+      const answer = await streamNvidia(q, bodyEl);
+      history.push({ role: "user", content: q });
+      history.push({ role: "assistant", content: answer });
+      renderSuggestions(STARTERS);
+    } catch (err) {
+      setBodyText(
+        bodyEl,
+        `Could not reach NVIDIA API.\n${err && err.message ? err.message : String(err)}\n\nIf this is a CORS block, use a temporary key in a supported browser session or a tiny proxy. Farm-only answers still require a live session key.`
+      );
+    } finally {
+      busy = false;
+      form.classList.remove("is-busy");
+    }
   }
+
+  keySave.addEventListener("click", () => startSession(keyInput.value));
+  keyClear.addEventListener("click", () => clearSession(false));
+  keyInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      startSession(keyInput.value);
+    }
+  });
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     ask(input.value);
   });
 
-  addMessage("nivi", WELCOME + (data.batch ? `\n\nActive batch: ${data.batch} · ${data.farmId || "Farm 147"}.` : ""));
+  addMessage(
+    "nivi",
+    "Hi — I’m NIVI Intelligence for Farm 147 / batch CC-AR-2026-00481 only.\n\nPaste a NVIDIA API key, click Start 3 min, then ask about crop health, NDVI heatmap, moisture, lab/EU risk, voyage, EUDR, or accept/reject.\n\nI will refuse anything outside this passport."
+  );
   renderSuggestions(STARTERS);
+  updateTimerUI();
 })();
