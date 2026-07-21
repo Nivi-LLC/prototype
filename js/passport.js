@@ -45,13 +45,20 @@
       if (on) active = view;
     });
 
+    let activeBtn = null;
     $$(".nav-btn[data-view]").forEach((btn) => {
-      btn.classList.toggle("is-active", btn.dataset.view === viewId);
+      const on = btn.dataset.view === viewId;
+      btn.classList.toggle("is-active", on);
+      if (on) activeBtn = btn;
     });
 
     const title = document.getElementById("view-title");
     if (title && active) {
       title.textContent = active.dataset.title || "NIVI Passports";
+    }
+
+    if (activeBtn && typeof activeBtn.scrollIntoView === "function") {
+      activeBtn.scrollIntoView({ inline: "nearest", block: "nearest", behavior: "smooth" });
     }
 
     try {

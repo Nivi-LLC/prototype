@@ -230,16 +230,17 @@ a {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 4px;
+  gap: 2px;
   flex-wrap: nowrap;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x proximity;
-  scrollbar-width: none;
+  scrollbar-width: thin;
   border-radius: 999px;
   padding: 4px;
-  max-width: min(720px, 72vw);
+  min-width: 0;
+  max-width: min(1080px, calc(100vw - 28rem));
   background: #f3f4f6;
   border: 1px solid #e5e7eb;
   touch-action: pan-x;
@@ -255,8 +256,8 @@ a {
   background: transparent;
   color: var(--muted);
   cursor: pointer;
-  padding: 0.55rem 0.9rem;
-  font-size: 0.82rem;
+  padding: 0.5rem 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
   white-space: nowrap;
   scroll-snap-align: center;
@@ -1167,6 +1168,7 @@ a {
     overflow-x: auto;
     flex-wrap: nowrap;
     justify-content: flex-start;
+    max-width: 100%;
   }
 
   .topbar__actions {
