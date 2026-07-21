@@ -181,15 +181,15 @@ a {
   grid-template-columns: minmax(160px, 1fr) auto minmax(160px, 1fr);
   align-items: center;
   gap: 1rem;
-  padding: 10px 14px;
+  padding: 12px 0;
   position: sticky;
   top: 0;
   z-index: 40;
-  border-radius: 14px;
-  margin-top: 8px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 16px rgba(28, 36, 32, 0.06);
+  border-radius: 0;
+  margin-top: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .brand {
@@ -1211,7 +1211,8 @@ a {
   .topbar {
     top: 0;
     margin-top: 0;
-    border-radius: 0 0 12px 12px;
+    border-radius: 0;
+    background: var(--bg);
   }
 
   .topnav {
