@@ -28,7 +28,7 @@
   const guard = window.NIVI_FARM_GUARD || null;
   const REFUSAL =
     (guard && guard.REFUSAL) ||
-    "I don't have that in this passport. I can only answer about Farm 147 and this batch's risk factors.";
+    "I only have information for Farm 147 and this batch (CC-AR-2026-00481).";
 
   const STARTERS = [
     "Why is crop health 95%?",
@@ -353,7 +353,7 @@
     try {
       const answer = await streamNvidia(q, bodyEl);
       // Only keep in-scope turns so follow-ups stay scoped
-      const refused = String(answer).includes("I don't have that in this passport");
+      const refused = String(answer).includes("I only have information for Farm 147");
       if (answer && !refused) {
         history.push({ role: "user", content: q });
         history.push({ role: "assistant", content: answer });
@@ -386,7 +386,7 @@
 
   addMessage(
     "nivi",
-    "Hi — I’m NIVI Intelligence for Farm 147 / batch CC-AR-2026-00481 only.\n\nStart a 3-minute session, then ask about crop health, NDVI heatmap, moisture, lab/EU risk, voyage, EUDR, or accept/reject.\n\nI will refuse anything outside this passport."
+    "Hi — I’m NIVI Intelligence. I can explain this Continental Coffee batch: Farm 147 crop health, harvest CC-AR-2026-00481, lab EU risk, voyage status, EUDR twin, carbon, and whether to accept the shipment.\n\nStart a 3-minute session, then ask a question."
   );
   renderSuggestions(STARTERS);
   updateTimerUI();

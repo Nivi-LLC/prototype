@@ -1,7 +1,7 @@
 /* Farm 147 access control — client-side gate (server enforces the same rules). */
 (function (global) {
   const REFUSAL =
-    "I don't have that in this passport. I can only answer about Farm 147 and this batch's risk factors.";
+    "I only have information for Farm 147 and this batch (CC-AR-2026-00481).";
 
   const ALLOW =
     /\b(farm\s*147|batch|shipment|po-?2026|ship-?2026|cc-ar|crop|health|ndvi|heatmap|moisture|eudr|accept|reject|risk|lab|voyage|container|carbon|kodagu|surlabbi|somwarpet|continental|arabica|harvest|passport|quality|hamburg|certificate|ochratoxin|pesticide|weather|disease|canopy|polygon|gps|roasting|importer|verdict|eu\b|mrl|iot|seal|phytosanitary|coa|pallet|bag|truck|processing|warehouse|customs|twin|satellite|stress|dense|sparse|yield|elevation|soil|rainfall|block\s*a)\b/i;
@@ -37,7 +37,7 @@
   function gateAnswer(answer) {
     const text = String(answer || "").trim();
     if (!text) return REFUSAL;
-    if (text.includes("I don't have that in this passport")) return text;
+    if (text.includes("I only have information for Farm 147")) return text;
     const offOrigin =
       /\b(brazil|colombia|ethiopia|vietnam|guatemala|honduras)\b/i.test(text) &&
       !/\bfarm\s*147\b/i.test(text);
