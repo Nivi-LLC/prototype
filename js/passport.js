@@ -2,7 +2,6 @@
   const data = window.PASSPORT;
   if (!data) return;
 
-  const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
   function fillText() {
@@ -14,30 +13,8 @@
     });
   }
 
-  function buildJourney() {
-    const track = $("#journey-track");
-    if (!track) return;
-
-    data.journey.forEach((step, i) => {
-      const a = document.createElement("a");
-      a.href = `#${step.id}`;
-      a.className = "journey-step";
-      a.dataset.stage = step.id;
-      a.innerHTML = `<span class="journey-step__dot" aria-hidden="true"></span><span>${step.label}</span>`;
-      track.appendChild(a);
-
-      if (i < data.journey.length - 1) {
-        const line = document.createElement("span");
-        line.className = "journey-step__line";
-        line.setAttribute("aria-hidden", "true");
-        line.dataset.after = step.id;
-        track.appendChild(line);
-      }
-    });
-  }
-
   function buildDocs() {
-    const list = $("#customs-docs");
+    const list = document.getElementById("customs-docs");
     if (!list) return;
     data.customs.documents.forEach((doc) => {
       const li = document.createElement("li");
@@ -47,7 +24,7 @@
   }
 
   function buildChips() {
-    const wrap = $("#process-chips");
+    const wrap = document.getElementById("process-chips");
     if (!wrap) return;
     data.processing.steps.forEach((step) => {
       const span = document.createElement("span");
@@ -57,88 +34,55 @@
     });
   }
 
-  function buildForecast() {
-    const body = $("#forecast-body");
-    if (!body) return;
-    data.weather.forecast.forEach((row) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${row.day}</td>
-        <td>${row.max}° / ${row.min}°</td>
-        <td>${row.precip}"</td>
-        <td>${row.humidity}%</td>
-        <td>${row.clouds}%</td>
-        <td>${row.wind} mph</td>`;
-      body.appendChild(tr);
+  function setView(viewId) {
+    const views = $$(".view");
+    const buttons = $$(".nav-btn[data-view]");
+    let active = null;
+
+    views.forEach((view) => {
+      const on = view.id === `view-${viewId}`;
+      view.classList.toggle("is-active", on);
+      if (on) active = view;
     });
-  }
 
-  function setupScrollSpy() {
-    const stages = data.journey.map((j) => j.id);
-    const sections = stages
-      .map((id) => document.getElementById(id))
-      .filter(Boolean);
+    buttons.forEach((btn) => {
+      btn.classList.toggle("is-active", btn.dataset.view === viewId);
+    });
 
-    const update = () => {
-      const offset = 120;
-      let active = stages[0];
-      for (const section of sections) {
-        const top = section.getBoundingClientRect().top;
-        if (top - offset <= 0) active = section.id;
-      }
-
-      const activeIndex = stages.indexOf(active);
-      $$(".journey-step").forEach((el) => {
-        const idx = stages.indexOf(el.dataset.stage);
-        el.classList.toggle("is-active", el.dataset.stage === active);
-        el.classList.toggle("is-done", idx < activeIndex);
-      });
-      $$(".journey-step__line").forEach((line) => {
-        const idx = stages.indexOf(line.dataset.after);
-        line.classList.toggle("is-done", idx < activeIndex);
-        if (idx < activeIndex) line.style.background = "var(--amber)";
-        else line.style.background = "";
-      });
-    };
-
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-  }
-
-  function setupReveal() {
-    const nodes = $$(".section, .panel--reveal");
-    if (!("IntersectionObserver" in window)) {
-      nodes.forEach((n) => n.classList.add("is-visible"));
-      return;
+    const title = document.getElementById("view-title");
+    if (title && active) {
+      title.textContent = active.dataset.title || "NIVI Passports";
     }
 
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            io.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" }
-    );
+    try {
+      history.replaceState(null, "", `#${viewId}`);
+    } catch (e) {}
 
-    nodes.forEach((n) => io.observe(n));
+    window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
   }
 
-  function setupMeters() {
-    $$("[data-meter]").forEach((el) => {
-      el.style.setProperty("--meter", `${el.getAttribute("data-meter")}%`);
+  function setupNav() {
+    $$(".nav-btn[data-view]").forEach((btn) => {
+      btn.addEventListener("click", () => setView(btn.dataset.view));
+    });
+
+    const hash = (location.hash || "").replace("#", "");
+    const allowed = ["overview", "map", "grow", "harvest", "chain", "trust"];
+    setView(allowed.includes(hash) ? hash : "overview");
+  }
+
+  function setupSectorCards() {
+    $$(".sector-card").forEach((card) => {
+      card.addEventListener("click", () => {
+        $$(".sector-card").forEach((c) => c.classList.remove("is-active"));
+        card.classList.add("is-active");
+      });
     });
   }
 
   fillText();
-  buildJourney();
   buildDocs();
   buildChips();
-  buildForecast();
-  setupMeters();
-  setupScrollSpy();
-  setupReveal();
+  setupNav();
+  setupSectorCards();
 })();

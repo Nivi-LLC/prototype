@@ -37,12 +37,13 @@ All values in `js/data.js` are **dummy data** for demonstration.
 
 Static HTML + CSS + vanilla JS. No build step.
 
-- `index.html` — passport page
-- `css/passport.css` — visual system
+- `index.html` — Tanee-style farm monitoring shell
+- `css/passport.css` — light dashboard system
 - `js/data.js` — dummy passport model
-- `js/passport.js` — journey rail, scroll-spy, reveals
-- `assets/` — farm NDVI map, NDVI chart, weather panel, hero & beans imagery
+- `js/gate.js` — password gate (`9999`)
+- `js/passport.js` — sidebar view switching + data bind
+- `assets/` — farm NDVI map, NDVI chart, weather panel, beans imagery
 
 ## Design notes
 
-UI patterns adapted from Tanee Smart Farming (metric tiles, green health accents, map composition) and Farm Management Dashboard (sticky journey progress, dark trust panels). Visual direction is forest green + harvest amber—not the real-estate AURA prototype.
+Redesigned to match the **Tanee Smart Farming** UI kit: floating dark icon sidebar, light gray canvas, white cards, green health accents, greenhouse-style monitoring grid, sector map view, device list, camera card, and journey task rail—applied to the Continental Coffee / Farm 147 passport story.

@@ -11,538 +11,544 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/passport.css" />
     <script src="js/gate.js"></script>
   </head>
   <body>
-    <!-- 1. Hero -->
-    <header class="hero" id="top">
-      <div class="hero__media" aria-hidden="true">
-        <img src="assets/coffee-hero.jpg" alt="" width="1920" height="1464" />
-      </div>
-      <div class="hero__veil" aria-hidden="true"></div>
-      <div class="hero__top">
-        <span class="hero__secure">Secure product intelligence link</span>
-      </div>
-      <div class="hero__content">
-        <h1 class="hero__brand">NIVI Passports</h1>
-        <p class="hero__line">Continental Coffee · Arabica · Kodagu</p>
-        <div class="hero__ctas">
-          <a class="btn btn--primary" href="#roaster">Accept recommended</a>
-          <a class="btn btn--ghost" href="#farm">View evidence</a>
+    <div class="app">
+      <aside class="sidebar" aria-label="Passport navigation">
+        <div class="sidebar__inner">
+          <div class="sidebar__logo" title="NIVI Passports">N</div>
+          <button class="nav-btn is-active" type="button" data-view="overview" aria-label="Overview" title="Overview">
+            <svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5z"/></svg>
+          </button>
+          <button class="nav-btn" type="button" data-view="map" aria-label="Farm map" title="Farm map">
+            <svg viewBox="0 0 24 24"><path d="M9 4 3 6.5V20l6-2.5 6 2.5 6-2.5V4l-6 2.5L9 4z"/><path d="M9 4v13.5M15 6.5V20"/></svg>
+          </button>
+          <button class="nav-btn" type="button" data-view="grow" aria-label="Growing season" title="Growing season">
+            <svg viewBox="0 0 24 24"><path d="M12 21V11"/><path d="M12 11c0-4 3-7 8-7-1 5-4 7-8 7z"/><path d="M12 13c0-3.5-3-6-7-6 1 4 3.5 6 7 6z"/></svg>
+          </button>
+          <button class="nav-btn" type="button" data-view="harvest" aria-label="Harvest" title="Harvest">
+            <svg viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 10a5 5 0 0 1 10 0c0 4-5 7-5 7s-5-3-5-7z"/></svg>
+          </button>
+          <button class="nav-btn" type="button" data-view="chain" aria-label="Supply chain" title="Supply chain">
+            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="8.5" y="13" width="7" height="7" rx="1.5"/><path d="M10 7.5h4M12 11v2"/></svg>
+          </button>
+          <div class="sidebar__spacer"></div>
+          <button class="nav-btn" type="button" data-view="trust" aria-label="Importer trust" title="Importer trust">
+            <svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/></svg>
+          </button>
         </div>
-      </div>
-    </header>
+      </aside>
 
-    <!-- 2. Identity -->
-    <div class="identity">
-      <div class="identity__inner">
-        <div class="identity__item">
-          <span>PO</span>
-          <strong data-bind="po"></strong>
-        </div>
-        <div class="identity__item">
-          <span>Shipment</span>
-          <strong data-bind="shipment"></strong>
-        </div>
-        <div class="identity__item">
-          <span>Batch</span>
-          <strong data-bind="batch"></strong>
-        </div>
-        <div class="identity__item">
-          <span>Farm</span>
-          <strong data-bind="farmId"></strong>
-        </div>
-        <div class="identity__item">
-          <span>Destination</span>
-          <strong data-bind="destination"></strong>
+      <div class="main">
+        <header class="topbar">
+          <h1 class="topbar__title" id="view-title">Farm Monitoring</h1>
+          <div class="topbar__actions">
+            <span class="pill"><span class="dot" aria-hidden="true"></span> 0 Alert</span>
+            <label class="visually-hidden" for="sector-select">Sector</label>
+            <select class="select-like" id="sector-select" aria-label="Sector">
+              <option>Farm 147 · Arabica Block A</option>
+            </select>
+            <span class="pill pill--soft">Batch CC-AR-2026-00481</span>
+          </div>
+        </header>
+
+        <div class="workspace">
+          <!-- OVERVIEW — Tanee greenhouse monitoring layout -->
+          <section class="view is-active" id="view-overview" data-title="Farm Monitoring">
+            <div class="dash">
+              <div class="dash__left">
+                <div class="card loc-card">
+                  <div class="loc-card__info">
+                    <div>
+                      <div class="loc-row">
+                        <div class="loc-icon">📍</div>
+                        <div>
+                          <strong>Somwarpet, Kodagu</strong>
+                          <span>Karnataka, India · Tue, 14 Jun 2026</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="temp-block">
+                      <p class="metric-value">24<small>°C</small></p>
+                      <p class="metric-note">Sunny · Ideal for cherry development</p>
+                    </div>
+                    <div>
+                      <p class="card__meta">ID: F-147A · Area: 4.8 ha · Elev: 1125 m</p>
+                    </div>
+                  </div>
+                  <div class="map-panel">
+                    <img src="assets/farm-ndvi-map.png" alt="Farm 147 GPS boundary with NDVI overlay" />
+                    <div class="map-tag">
+                      <strong>Farm 147</strong>
+                      GPS boundary verified
+                    </div>
+                  </div>
+                </div>
+
+                <div class="metrics-grid">
+                  <div class="card card--green">
+                    <div class="card__head">
+                      <p class="card__label">Crop Health</p>
+                      <button class="icon-btn" type="button" aria-label="Expand" tabindex="-1">↗</button>
+                    </div>
+                    <p class="metric-value">95% <span style="font-size:1rem;font-weight:600">Good</span></p>
+                    <p class="metric-note">Shade-grown Arabica canopy is thriving across the verified plot.</p>
+                  </div>
+                  <div class="card">
+                    <div class="card__head">
+                      <p class="card__label">Wind</p>
+                      <button class="icon-btn" type="button" aria-label="Expand" tabindex="-1">↗</button>
+                    </div>
+                    <p class="metric-value">4<span style="font-size:1rem"> m/s</span></p>
+                    <p class="metric-note">Stable breeze · low disease pressure risk.</p>
+                  </div>
+                  <div class="card">
+                    <div class="card__head">
+                      <p class="card__label">Temperature</p>
+                      <button class="icon-btn" type="button" aria-label="Expand" tabindex="-1">↗</button>
+                    </div>
+                    <p class="metric-value">22<span style="font-size:1rem">°C</span></p>
+                    <p class="metric-note">Ideal band 18–24°C for Arabica quality.</p>
+                  </div>
+                  <div class="card">
+                    <div class="card__head">
+                      <p class="card__label">Soil pH</p>
+                      <button class="icon-btn" type="button" aria-label="Expand" tabindex="-1">↗</button>
+                    </div>
+                    <p class="metric-value">6.2</p>
+                    <p class="metric-note">Lateritic soil · high organic matter.</p>
+                  </div>
+                  <div class="card">
+                    <div class="card__head">
+                      <p class="card__label">Humidity</p>
+                      <button class="icon-btn" type="button" aria-label="Expand" tabindex="-1">↗</button>
+                    </div>
+                    <p class="metric-value">70<span style="font-size:1rem">%</span></p>
+                    <p class="metric-note">Within shade-grown comfort range.</p>
+                  </div>
+                  <div class="card">
+                    <div class="card__head">
+                      <p class="card__label">Soil Moisture</p>
+                      <button class="icon-btn" type="button" aria-label="Expand" tabindex="-1">↗</button>
+                    </div>
+                    <p class="metric-value">62<span style="font-size:1rem">%</span></p>
+                    <p class="metric-note">No irrigation alert · monsoon residual OK.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dash__mid">
+                <div class="card" style="flex:1">
+                  <div class="card__head">
+                    <div>
+                      <p class="card__label">Evidence stream</p>
+                      <p class="card__meta">6 sensors · 2 capture devices</p>
+                    </div>
+                  </div>
+                  <ul class="device-list">
+                    <li class="device-item">
+                      <span class="status-dot" aria-hidden="true"></span>
+                      <div>
+                        <strong>Soil Moisture Probe</strong>
+                        <span>SM-147-01 · Block A North</span>
+                      </div>
+                      <span class="badge">Active</span>
+                    </li>
+                    <li class="device-item">
+                      <span class="status-dot" aria-hidden="true"></span>
+                      <div>
+                        <strong>Canopy Temp Sensor</strong>
+                        <span>CT-147-02 · Shade belt</span>
+                      </div>
+                      <span class="badge">Active</span>
+                    </li>
+                    <li class="device-item">
+                      <span class="status-dot" aria-hidden="true"></span>
+                      <div>
+                        <strong>Humidity Node</strong>
+                        <span>RH-147-03 · Mid slope</span>
+                      </div>
+                      <span class="badge">Active</span>
+                    </li>
+                    <li class="device-item">
+                      <span class="status-dot" aria-hidden="true"></span>
+                      <div>
+                        <strong>Digital Moisture Meter</strong>
+                        <span>Harvest capture · auto upload</span>
+                      </div>
+                      <span class="badge">Linked</span>
+                    </li>
+                    <li class="device-item">
+                      <span class="status-dot" aria-hidden="true"></span>
+                      <div>
+                        <strong>Weighbridge Scale</strong>
+                        <span>Collection · auto weight</span>
+                      </div>
+                      <span class="badge">Linked</span>
+                    </li>
+                    <li class="device-item">
+                      <span class="status-dot" aria-hidden="true"></span>
+                      <div>
+                        <strong>Field Camera</strong>
+                        <span>CAM-1 · Cherry maturity</span>
+                      </div>
+                      <span class="badge">Live</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="dash__right">
+                <div class="card camera-card">
+                  <img src="assets/beans-closeup.jpg" alt="Coffee beans from Farm 147 batch" />
+                  <div class="camera-overlay">
+                    <div class="camera-overlay__top">
+                      <strong>Camera 1</strong>
+                      <span>1 / 2</span>
+                    </div>
+                    <div class="camera-overlay__bottom">
+                      <span>Cherry / green bean evidence</span>
+                      <span>HD</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card__head">
+                    <p class="card__label">Passport journey</p>
+                  </div>
+                  <div class="task-progress">
+                    <span>Traceability complete</span>
+                    <strong>89%</strong>
+                  </div>
+                  <div class="bar" style="--pct: 89%"><div class="bar__fill"></div></div>
+                  <ul class="task-list">
+                    <li class="task-item">
+                      <div>
+                        <strong>Farm boundary verified</strong>
+                        <span>GPS polygon · officer confirmed</span>
+                      </div>
+                      <span class="check is-done" aria-hidden="true">✓</span>
+                    </li>
+                    <li class="task-item">
+                      <div>
+                        <strong>Growing season profile</strong>
+                        <span>NDVI + weather synced</span>
+                      </div>
+                      <span class="check is-done" aria-hidden="true">✓</span>
+                    </li>
+                    <li class="task-item">
+                      <div>
+                        <strong>Harvest batch CC-AR-2026-00481</strong>
+                        <span>Moisture 11.2% · Premium Export</span>
+                      </div>
+                      <span class="check is-done" aria-hidden="true">✓</span>
+                    </li>
+                    <li class="task-item">
+                      <div>
+                        <strong>Continental Line 3 + Lab</strong>
+                        <span>EU acceptance 99%</span>
+                      </div>
+                      <span class="check is-done" aria-hidden="true">✓</span>
+                    </li>
+                    <li class="task-item">
+                      <div>
+                        <strong>Ocean voyage watch</strong>
+                        <span>Arabian Sea · ETA 11 days</span>
+                      </div>
+                      <span class="check" aria-hidden="true"></span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- MAP — Tanee sector map layout -->
+          <section class="view" id="view-map" data-title="Sector Map">
+            <p class="section-intro">
+              India → Karnataka → Kodagu → Farm 147. One verified coffee plantation digital twin for Continental Coffee.
+            </p>
+            <div class="map-layout">
+              <div class="sector-list">
+                <button class="sector-card is-active" type="button">
+                  <h3>Block A — North Slope</h3>
+                  <p>
+                    Somwarpet, Kodagu<br />
+                    2.1 ha · 12.5974° N, 75.8063° E<br />
+                    Arabica S.795 · Primary harvest block
+                  </p>
+                </button>
+                <button class="sector-card" type="button">
+                  <h3>Block B — Shade Belt</h3>
+                  <p>
+                    Somwarpet, Kodagu<br />
+                    1.6 ha · Silver oak / pepper intercrop<br />
+                    Supporting canopy · lower cherry density
+                  </p>
+                </button>
+                <button class="sector-card" type="button">
+                  <h3>Block C — Lower Terrace</h3>
+                  <p>
+                    Somwarpet, Kodagu<br />
+                    1.1 ha · Drainage terrace<br />
+                    Reserve plot · not in this batch
+                  </p>
+                </button>
+                <div class="card">
+                  <p class="card__label">Farm identity</p>
+                  <ul class="facts" style="margin-top: 0.75rem">
+                    <li><span>Owner</span><strong data-bind="farm.owner"></strong></li>
+                    <li><span>Reliability</span><strong>96%</strong></li>
+                    <li><span>Variety</span><strong data-bind="farm.variety"></strong></li>
+                    <li><span>Previous quality</span><strong>AA / 84–86</strong></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="map-stage">
+                <div class="map-stage__media">
+                  <img src="assets/farm-ndvi-map.png" alt="Satellite farm map with vegetation heatmap" />
+                  <div class="map-tools" aria-hidden="true">
+                    <button type="button">+</button>
+                    <button type="button">−</button>
+                    <button type="button">⤢</button>
+                  </div>
+                  <div class="map-tag" style="bottom: 18px; left: 18px">
+                    <strong>Vegetation heatmap</strong>
+                    Dense canopy 97.37% · stress patch &lt; 2%
+                  </div>
+                </div>
+                <div class="map-stage__footer">
+                  <div class="chart-legend">
+                    <span><i style="background:#35c56e"></i>Soil moisture</span>
+                    <span><i style="background:#4aa3ff"></i>Precipitation</span>
+                    <span><i style="background:#f0b429"></i>Humidity</span>
+                    <span><i style="background:#9b7bff"></i>Canopy growth</span>
+                  </div>
+                  <svg class="chart-svg" viewBox="0 0 640 120" preserveAspectRatio="none" aria-hidden="true">
+                    <path d="M0 80 C80 70,120 90,200 60 S360 30,440 50 560 90,640 55" fill="none" stroke="#35c56e" stroke-width="2.5"/>
+                    <path d="M0 95 C100 88,160 100,240 78 S400 50,500 70 600 85,640 72" fill="none" stroke="#4aa3ff" stroke-width="2"/>
+                    <path d="M0 70 C90 60,150 75,260 55 S420 40,520 58 600 70,640 48" fill="none" stroke="#f0b429" stroke-width="2"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- GROW -->
+          <section class="view" id="view-grow" data-title="Growing Season">
+            <p class="section-intro">
+              Satellite, rainfall, temperature, humidity, and vegetation index assembled into a living crop profile.
+            </p>
+            <div class="view-grid--3" style="display:grid;gap:12px;margin-bottom:12px">
+              <div class="card card--green">
+                <p class="card__label">Crop health</p>
+                <p class="metric-value">95%</p>
+                <p class="metric-note">Dense canopy across verified plot</p>
+              </div>
+              <div class="card">
+                <p class="card__label">Expected harvest</p>
+                <p class="metric-value">2.4 MT</p>
+                <p class="metric-note">Farm contribution to SHIP-2026-00081</p>
+              </div>
+              <div class="card">
+                <p class="card__label">Risk</p>
+                <p class="metric-value">Low</p>
+                <p class="metric-note">0 disease alerts detected</p>
+              </div>
+            </div>
+            <div class="view-grid">
+              <div class="card">
+                <div class="card__head">
+                  <div>
+                    <p class="card__label">NDVI values split</p>
+                    <p class="card__meta" data-bind="season.date"></p>
+                  </div>
+                </div>
+                <div class="media-frame">
+                  <img src="assets/ndvi-split.png" alt="NDVI split chart" />
+                </div>
+                <div class="metrics-grid" style="margin-top:12px">
+                  <div class="stat"><span>Dense</span><strong>97.37%</strong></div>
+                  <div class="stat"><span>Moderate</span><strong>1.42%</strong></div>
+                  <div class="stat"><span>Sparse</span><strong>1.21%</strong></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card__head">
+                  <div>
+                    <p class="card__label">Weather & activity</p>
+                    <p class="card__meta">0 risk(s) detected</p>
+                  </div>
+                </div>
+                <div class="media-frame">
+                  <img src="assets/weather-panel.png" alt="Weather and field activity dashboard" />
+                </div>
+                <ul class="facts" style="margin-top:12px">
+                  <li><span>Now</span><strong>73°F</strong></li>
+                  <li><span>Humidity</span><strong>70%</strong></li>
+                  <li><span>Precipitation</span><strong>0 inch</strong></li>
+                  <li><span>Wind</span><strong>9 mph</strong></li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- HARVEST -->
+          <section class="view" id="view-harvest" data-title="Harvest & AI Grade">
+            <p class="section-intro">
+              Mobile capture recorded GPS, time, farmer, field, photos, weight, and moisture—no manual typing.
+            </p>
+            <div class="view-grid">
+              <div class="card camera-card" style="min-height:280px">
+                <img src="assets/beans-closeup.jpg" alt="Harvest batch green coffee beans" style="height:100%;min-height:280px" />
+                <div class="camera-overlay">
+                  <div class="camera-overlay__top">
+                    <strong data-bind="batch"></strong>
+                    <span>Verified</span>
+                  </div>
+                  <div class="camera-overlay__bottom">
+                    <span>12 Jan 2026 · Block A North Slope</span>
+                    <span>1840 kg</span>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div class="card">
+                  <ul class="facts">
+                    <li><span>Farmer</span><strong data-bind="harvest.farmer"></strong></li>
+                    <li><span>Field</span><strong data-bind="harvest.field"></strong></li>
+                    <li><span>Weight</span><strong>1840 kg</strong></li>
+                    <li><span>Moisture</span><strong>11.2%</strong></li>
+                    <li><span>Photos / video</span><strong>6 · on</strong></li>
+                    <li><span>GPS verified</span><strong>Yes</strong></li>
+                  </ul>
+                </div>
+                <div class="card card--green">
+                  <p class="card__label">AI evaluation</p>
+                  <p class="metric-value" style="font-size:1.8rem">Premium Export</p>
+                  <p class="metric-note">Export quality Excellent · Specialty grade High · Moisture 11.2%</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- CHAIN -->
+          <section class="view" id="view-chain" data-title="Processing to Voyage">
+            <p class="section-intro">
+              Continental Coffee processing, lab AI, packaging, warehouse, container IoT, and ocean guidance—one chain.
+            </p>
+            <div class="view-grid--3" style="display:grid;gap:12px;margin-bottom:12px">
+              <div class="card">
+                <p class="card__label">Transport</p>
+                <div class="timeline" style="margin-top:0.85rem">
+                  <div class="timeline__item">
+                    <h4>Harvest complete</h4>
+                    <p>Farm 147 · 12 Jan 2026 · 07:42 IST</p>
+                  </div>
+                  <div class="timeline__item">
+                    <h4>Truck KA-12-AB-4481</h4>
+                    <p>Suresh N. · Arr 18:05 · 24°C / 62% RH</p>
+                  </div>
+                  <div class="timeline__item">
+                    <h4>Continental plant</h4>
+                    <p>Kushalnagar · Line 3</p>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <p class="card__label">Processing · Line 3</p>
+                <ul class="facts" style="margin-top:0.75rem">
+                  <li><span>Operator</span><strong data-bind="processing.operator"></strong></li>
+                  <li><span>Defects</span><strong data-bind="processing.defectCount"></strong></li>
+                  <li><span>Uniformity</span><strong data-bind="processing.uniformity"></strong></li>
+                  <li><span>Dates</span><strong data-bind="processing.date"></strong></li>
+                </ul>
+                <div class="chips" id="process-chips" style="margin-top:0.75rem"></div>
+              </div>
+              <div class="card card--green">
+                <p class="card__label">Lab AI</p>
+                <p class="metric-value" style="font-size:1.8rem">Approve</p>
+                <p class="metric-note">EU acceptance 99% · Rejection 0.8% · Shelf life 14 months · Plantation AA</p>
+              </div>
+            </div>
+            <div class="view-grid">
+              <div class="card">
+                <p class="card__label">Lab results</p>
+                <ul class="facts" style="margin-top:0.75rem">
+                  <li><span>Moisture</span><strong data-bind="lab.moisture"></strong></li>
+                  <li><span>Density</span><strong data-bind="lab.density"></strong></li>
+                  <li><span>Screen</span><strong data-bind="lab.screenSize"></strong></li>
+                  <li><span>Ochratoxin</span><strong data-bind="lab.ochratoxin"></strong></li>
+                  <li><span>Pesticides</span><strong data-bind="lab.pesticides"></strong></li>
+                  <li><span>Heavy metals</span><strong data-bind="lab.heavyMetals"></strong></li>
+                </ul>
+              </div>
+              <div class="card">
+                <p class="card__label">Container & ocean</p>
+                <ul class="facts" style="margin-top:0.75rem">
+                  <li><span>Container</span><strong data-bind="container.number"></strong></li>
+                  <li><span>Seal</span><strong data-bind="container.seal"></strong></li>
+                  <li><span>IoT temp / RH</span><strong>18.4°C / 55%</strong></li>
+                  <li><span>Position</span><strong data-bind="voyage.position"></strong></li>
+                  <li><span>ETA</span><strong>11 days · Hamburg</strong></li>
+                  <li><span>Quality risk</span><strong>None</strong></li>
+                </ul>
+                <p class="metric-note" style="margin-top:0.75rem" data-bind="voyage.recommendation"></p>
+              </div>
+            </div>
+            <div class="card" style="margin-top:12px">
+              <p class="card__label">Customs documents</p>
+              <ul class="doc-list" id="customs-docs" style="margin-top:0.75rem"></ul>
+              <p class="metric-note" style="margin-top:0.75rem" data-bind="customs.aiCheck"></p>
+            </div>
+          </section>
+
+          <!-- TRUST -->
+          <section class="view" id="view-trust" data-title="Importer Trust">
+            <p class="section-intro">
+              One secure link instead of 50 PDFs. AI recommends Accept Shipment for the European roaster in Hamburg.
+            </p>
+            <div class="card card--green" style="margin-bottom:12px">
+              <p class="card__label">AI recommendation</p>
+              <p class="metric-value" style="font-size:2rem">Accept Shipment</p>
+              <p class="metric-note">
+                Continental Coffee · Farm 147 · Quality 98% · Certificates valid · Roasting performance Excellent
+              </p>
+            </div>
+            <div class="stat-grid" style="margin-bottom:12px">
+              <div class="stat"><span>Shipment</span><strong>200 MT</strong></div>
+              <div class="stat"><span>Origin</span><strong>Kodagu</strong></div>
+              <div class="stat"><span>PO</span><strong data-bind="po"></strong></div>
+              <div class="stat"><span>Risk</span><strong>Low</strong></div>
+              <div class="stat"><span>EU accept</span><strong>99%</strong></div>
+              <div class="stat"><span>Destination</span><strong>Hamburg</strong></div>
+            </div>
+            <div class="card">
+              <p class="card__label">Should you buy from Continental Coffee again?</p>
+              <div class="stat-grid" style="margin:12px 0">
+                <div class="stat"><span>Shipments</span><strong>142</strong></div>
+                <div class="stat"><span>Avg delay</span><strong>1.4 d</strong></div>
+                <div class="stat"><span>Avg moisture</span><strong>11.1%</strong></div>
+                <div class="stat"><span>EU acceptance</span><strong>99.2%</strong></div>
+                <div class="stat"><span>Complaints</span><strong>0.6%</strong></div>
+                <div class="stat"><span>Price premium</span><strong>4.8%</strong></div>
+              </div>
+              <div class="card card--green">
+                <p class="metric-value" style="font-size:1.4rem">Increase annual contract by 30%</p>
+                <p class="metric-note">Evidence across farm, processing, lab, and voyage—not a one-off certificate.</p>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>
-
-    <!-- 3. Journey rail -->
-    <nav class="journey-rail" aria-label="Coffee journey">
-      <div class="journey-rail__inner">
-        <div class="journey-rail__track" id="journey-track"></div>
-      </div>
-    </nav>
-
-    <!-- 4. Farm Intelligence -->
-    <section class="section" id="farm">
-      <p class="section__eyebrow">Step 2 · Farm Intelligence</p>
-      <h2 class="section__title">One farm. Full history.</h2>
-      <p class="section__lead">
-        India → Karnataka → Kodagu → Farm 147. The importer sees a verified digital twin—not a spreadsheet.
-      </p>
-
-      <div class="grid-2">
-        <div class="media-frame media-frame--map">
-          <img
-            src="assets/farm-ndvi-map.png"
-            alt="Satellite view of Farm 147 with GPS boundary and vegetation health overlay"
-            width="1280"
-            height="960"
-          />
-          <div class="media-caption">
-            <strong>Farm 147 · GPS boundary verified</strong>
-            Vegetation index overlay · Crop health 95%
-          </div>
-        </div>
-
-        <div class="stack">
-          <div class="panel panel--green">
-            <p class="panel__label">Reliability score</p>
-            <p class="panel__value"><span data-bind="farm.reliability"></span>%</p>
-            <p class="panel__note">Consistent Plantation A/AA quality across five seasons.</p>
-            <div class="meter" data-meter="96" style="--meter: 96%">
-              <div class="meter__fill"></div>
-            </div>
-          </div>
-
-          <div class="panel panel--solid">
-            <ul class="facts">
-              <li><span>Owner</span><strong data-bind="farm.owner"></strong></li>
-              <li><span>Location</span><strong>Somwarpet, Kodagu, India</strong></li>
-              <li><span>Area</span><strong>4.8 ha</strong></li>
-              <li><span>Elevation</span><strong>1125 m</strong></li>
-              <li><span>Variety</span><strong data-bind="farm.variety"></strong></li>
-              <li><span>Shade</span><strong data-bind="farm.shade"></strong></li>
-              <li><span>Rainfall (10y avg)</span><strong>2100 mm</strong></li>
-              <li><span>Soil</span><strong>Red lateritic · pH 6.2</strong></li>
-              <li><span>Boundary</span><strong data-bind="farm.boundary"></strong></li>
-              <li><span>Previous quality</span><strong data-bind="farm.previousQuality"></strong></li>
-            </ul>
-            <details class="drawer">
-              <summary>GPS & verification evidence</summary>
-              <div class="drawer__body">
-                Lat <span data-bind="farm.gps.lat"></span>, Lng
-                <span data-bind="farm.gps.lng"></span> · Accuracy
-                <span data-bind="farm.gps.accuracyM"></span> m · Officer-confirmed boundary walk +
-                satellite AI suggestion accepted.
-              </div>
-            </details>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. Growing Season -->
-    <section class="section" id="grow">
-      <p class="section__eyebrow">Step 3 · Growing Season</p>
-      <h2 class="section__title">Crop profile that updates itself.</h2>
-      <p class="section__lead">
-        Satellite, rainfall, temperature, humidity, and vegetation index—assembled into a living crop profile before harvest.
-      </p>
-
-      <div class="grid-3" style="margin-bottom: 1.25rem">
-        <div class="panel panel--green">
-          <p class="panel__label">Current crop health</p>
-          <p class="panel__value">95%</p>
-          <p class="panel__note">Dense canopy across verified plot</p>
-        </div>
-        <div class="panel">
-          <p class="panel__label">Expected harvest</p>
-          <p class="panel__value">2.4 MT</p>
-          <p class="panel__note">Farm contribution to SHIP-2026-00081</p>
-        </div>
-        <div class="panel">
-          <p class="panel__label">Risk</p>
-          <p class="panel__value">Low</p>
-          <p class="panel__note">0 disease alerts · 0 risk events</p>
-        </div>
-      </div>
-
-      <div class="grid-2">
-        <div class="panel panel--solid">
-          <p class="panel__label">NDVI values split · <span data-bind="season.date"></span></p>
-          <div class="media-frame" style="margin-top: 0.75rem; box-shadow: none">
-            <img
-              src="assets/ndvi-split.png"
-              alt="NDVI values split chart showing 97.37 percent dense vegetation"
-              width="800"
-              height="500"
-            />
-          </div>
-          <div class="gauge-row" style="margin-top: 1rem">
-            <div class="gauge">
-              <strong>97.37%</strong>
-              <span>Dense vegetation</span>
-            </div>
-            <div class="gauge">
-              <strong>1.42%</strong>
-              <span>Moderate</span>
-            </div>
-            <div class="gauge">
-              <strong>1.21%</strong>
-              <span>Sparse</span>
-            </div>
-            <div class="gauge">
-              <strong>0%</strong>
-              <span>Open soil / cloud</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel panel--solid">
-          <p class="panel__label">Weather & field activity</p>
-          <div class="media-frame" style="margin-top: 0.75rem; box-shadow: none">
-            <img
-              src="assets/weather-panel.png"
-              alt="Weather dashboard showing 73 degrees, 70 percent humidity, and three-day forecast"
-              width="900"
-              height="600"
-            />
-          </div>
-          <ul class="facts" style="margin-top: 1rem">
-            <li><span>Now</span><strong>73°F</strong></li>
-            <li><span>Humidity</span><strong>70%</strong></li>
-            <li><span>Precipitation</span><strong>0 inch</strong></li>
-            <li><span>Wind</span><strong>9 mph</strong></li>
-            <li><span>Risks detected</span><strong>0</strong></li>
-          </ul>
-          <details class="drawer">
-            <summary>3-day forecast detail</summary>
-            <div class="drawer__body" style="overflow-x: auto">
-              <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem">
-                <thead>
-                  <tr style="text-align: left; color: var(--muted)">
-                    <th style="padding: 0.35rem 0.25rem">Day</th>
-                    <th style="padding: 0.35rem 0.25rem">Max/Min</th>
-                    <th style="padding: 0.35rem 0.25rem">Precip</th>
-                    <th style="padding: 0.35rem 0.25rem">RH</th>
-                    <th style="padding: 0.35rem 0.25rem">Clouds</th>
-                    <th style="padding: 0.35rem 0.25rem">Wind</th>
-                  </tr>
-                </thead>
-                <tbody id="forecast-body"></tbody>
-              </table>
-            </div>
-          </details>
-        </div>
-      </div>
-    </section>
-
-    <!-- 6. Harvest -->
-    <section class="section" id="harvest">
-      <p class="section__eyebrow">Step 4 · Harvest</p>
-      <h2 class="section__title">Batch born at the tree.</h2>
-      <p class="section__lead">
-        Mobile capture recorded GPS, time, farmer, field, photos, weight, and moisture—no manual typing.
-      </p>
-
-      <div class="grid-2">
-        <div class="media-frame">
-          <img
-            src="assets/beans-closeup.jpg"
-            alt="Close-up of green coffee beans from harvest batch"
-            width="1200"
-            height="800"
-          />
-          <div class="media-caption">
-            <strong data-bind="batch"></strong>
-            Harvested 12 Jan 2026 · Block A North Slope
-          </div>
-        </div>
-
-        <div class="stack">
-          <div class="panel panel--solid">
-            <ul class="facts">
-              <li><span>Farmer</span><strong data-bind="harvest.farmer"></strong></li>
-              <li><span>Field</span><strong data-bind="harvest.field"></strong></li>
-              <li><span>Weight</span><strong>1840 kg</strong></li>
-              <li><span>Moisture</span><strong>11.2%</strong></li>
-              <li><span>Photos / video</span><strong>6 photos · video on</strong></li>
-              <li><span>GPS verified</span><strong>Yes</strong></li>
-            </ul>
-          </div>
-          <div class="panel panel--green">
-            <p class="panel__label">AI evaluation</p>
-            <p class="panel__value">Premium Export</p>
-            <p class="panel__note">
-              Export quality: Excellent · Expected specialty grade: High · Moisture 11.2%
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 7. Transport + Processing -->
-    <section class="section" id="plant">
-      <p class="section__eyebrow">Steps 5–6 · Transport & Processing</p>
-      <h2 class="section__title">From farm gate to Continental Line 3.</h2>
-      <p class="section__lead">
-        Truck telemetry and plant machines publish automatically. Continental adds the value that wins European buyers.
-      </p>
-
-      <div class="grid-2">
-        <div class="panel panel--solid">
-          <p class="panel__label">Transport</p>
-          <div class="timeline" style="margin-top: 1rem">
-            <div class="timeline__item">
-              <h4>Harvest complete</h4>
-              <p>Farm 147 · 12 Jan 2026 · 07:42 IST</p>
-            </div>
-            <div class="timeline__item">
-              <h4>Truck KA-12-AB-4481</h4>
-              <p>Driver Suresh N. · Dep 14:18 · Arr 18:05 · 24°C / 62% RH</p>
-            </div>
-            <div class="timeline__item">
-              <h4>Processing plant</h4>
-              <p>Continental Coffee — Kushalnagar</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel panel--solid">
-          <p class="panel__label">Processing · Machine Line 3</p>
-          <ul class="facts">
-            <li><span>Operator</span><strong data-bind="processing.operator"></strong></li>
-            <li><span>Shift</span><strong data-bind="processing.shift"></strong></li>
-            <li><span>Defect count</span><strong data-bind="processing.defectCount"></strong></li>
-            <li><span>Uniformity</span><strong data-bind="processing.uniformity"></strong></li>
-            <li><span>Dates</span><strong data-bind="processing.date"></strong></li>
-          </ul>
-          <div class="chips" id="process-chips" style="margin: 0.75rem 0"></div>
-          <p style="margin: 0; color: var(--muted); font-size: 0.92rem" data-bind="processing.aiNote"></p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 8. Lab -->
-    <section class="section" id="lab">
-      <p class="section__eyebrow">Step 7 · Laboratory</p>
-      <h2 class="section__title">Certificates that speak for themselves.</h2>
-      <p class="section__lead">
-        Instruments upload results. AI translates lab noise into an EU acceptance decision.
-      </p>
-
-      <div class="grid-2">
-        <div class="panel panel--solid">
-          <ul class="facts">
-            <li><span>Moisture</span><strong data-bind="lab.moisture"></strong></li>
-            <li><span>Density</span><strong data-bind="lab.density"></strong></li>
-            <li><span>Screen size</span><strong data-bind="lab.screenSize"></strong></li>
-            <li><span>Defect %</span><strong data-bind="lab.defectPct"></strong></li>
-            <li><span>Ochratoxin</span><strong data-bind="lab.ochratoxin"></strong></li>
-            <li><span>Pesticides</span><strong data-bind="lab.pesticides"></strong></li>
-            <li><span>Heavy metals</span><strong data-bind="lab.heavyMetals"></strong></li>
-            <li><span>Water activity</span><strong data-bind="lab.waterActivity"></strong></li>
-          </ul>
-          <details class="drawer">
-            <summary>Linked certificate IDs</summary>
-            <div class="drawer__body">
-              COA-2026-1184 · PHYTO-IN-2026-8841 · COO-IN-KA-2026-2201
-            </div>
-          </details>
-        </div>
-
-        <div class="stack">
-          <div class="panel panel--green">
-            <p class="panel__label">AI decision</p>
-            <p class="panel__value">Approve</p>
-            <p class="panel__note">
-              EU acceptance 99% · Rejection 0.8% · Expected shelf life 14 months
-            </p>
-            <div class="meter" data-meter="99" style="--meter: 99%; background: rgba(255,255,255,0.25)">
-              <div class="meter__fill" style="background: #fff"></div>
-            </div>
-          </div>
-          <div class="panel">
-            <p class="panel__label">Grade</p>
-            <p class="panel__value" style="font-size: 2rem" data-bind="grade"></p>
-            <p class="panel__note">Washed Arabica · Premium export path</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 9. Pack / Warehouse / Ship -->
-    <section class="section" id="pack">
-      <p class="section__eyebrow">Steps 8–9 · Packaging & Warehouse</p>
-      <h2 class="section__title">One scan. Entire lineage.</h2>
-      <p class="section__lead">
-        Bag → batch → pallet → container. Warehouse sensors keep quality locked before export.
-      </p>
-
-      <div class="grid-3">
-        <div class="panel panel--solid">
-          <p class="panel__label">Packaging</p>
-          <ul class="facts">
-            <li><span>Bags</span><strong>3200</strong></li>
-            <li><span>Bag prefix</span><strong>BAG-CC-481</strong></li>
-            <li><span>Pallets</span><strong>081A · 081B · 081C</strong></li>
-            <li><span>Container</span><strong data-bind="pack.containerId"></strong></li>
-          </ul>
-        </div>
-        <div class="panel panel--solid">
-          <p class="panel__label">Warehouse</p>
-          <ul class="facts">
-            <li><span>Zone</span><strong>Export B</strong></li>
-            <li><span>Temp</span><strong>22°C</strong></li>
-            <li><span>Humidity</span><strong>58%</strong></li>
-            <li><span>FIFO</span><strong>Compliant</strong></li>
-            <li><span>Storage</span><strong>9 days</strong></li>
-          </ul>
-        </div>
-        <div class="panel panel--green">
-          <p class="panel__label">Storage AI</p>
-          <p class="panel__value" style="font-size: 1.6rem">Stable</p>
-          <p class="panel__note">Humidity within band. No move required. Quality path clear for stuffing.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="ship">
-      <p class="section__eyebrow">Steps 10–11 · Container & Ocean</p>
-      <h2 class="section__title">Live voyage intelligence.</h2>
-      <p class="section__lead">
-        IoT every 30 minutes. AI explains position, ETA, congestion, and quality risk—not just a pin on a map.
-      </p>
-
-      <div class="grid-2">
-        <div class="panel panel--solid">
-          <p class="panel__label">Container MSCU8842191</p>
-          <ul class="facts">
-            <li><span>Seal</span><strong data-bind="container.seal"></strong></li>
-            <li><span>Loaded</span><strong data-bind="container.loadedAt"></strong></li>
-            <li><span>Weight</span><strong>200.4 MT</strong></li>
-            <li><span>Last temp</span><strong>18.4°C</strong></li>
-            <li><span>Last humidity</span><strong>55%</strong></li>
-            <li><span>Shock / door</span><strong>0 / 0</strong></li>
-          </ul>
-        </div>
-        <div class="panel panel--green">
-          <p class="panel__label">Ocean AI</p>
-          <p class="panel__value" style="font-size: 1.8rem">Arabian Sea</p>
-          <p class="panel__note">
-            Vessel MSC Amalfi · Chennai → Hamburg · ETA 11 days · Port congestion Low · Quality risk
-            None · Maintain current route
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 10. Customs -->
-    <section class="section section--dark" id="customs">
-      <div class="section__wrap">
-        <p class="section__eyebrow">Step 12 · Customs</p>
-        <h2 class="section__title">Everything linked. Everything matched.</h2>
-        <p class="section__lead">
-          No email attachments. AI verifies batch numbers, quantities, dates, and certificates in one place.
-        </p>
-
-        <div class="grid-2">
-          <ul class="doc-list" id="customs-docs"></ul>
-          <div class="panel panel--dark">
-            <p class="panel__label">AI verification</p>
-            <p class="panel__value" style="font-size: 1.7rem">Matched</p>
-            <p class="panel__note" data-bind="customs.aiCheck"></p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 11. Importer verdict + loyalty -->
-    <section class="section section--dark" id="roaster">
-      <div class="section__wrap">
-        <p class="section__eyebrow">Step 13 · Importer receives coffee</p>
-        <h2 class="section__title">Scan once. Trust the whole chain.</h2>
-        <p class="section__lead">
-          Not PDFs—an intelligence view with a clear recommendation for the European roaster.
-        </p>
-
-        <div class="verdict-grid">
-          <div class="stat">
-            <span>Shipment</span>
-            <strong>200 MT</strong>
-          </div>
-          <div class="stat">
-            <span>Origin</span>
-            <strong>Kodagu</strong>
-          </div>
-          <div class="stat">
-            <span>Quality</span>
-            <strong>98%</strong>
-          </div>
-          <div class="stat">
-            <span>Certificates</span>
-            <strong>Valid</strong>
-          </div>
-          <div class="stat">
-            <span>Current risk</span>
-            <strong>Low</strong>
-          </div>
-          <div class="stat">
-            <span>Roasting</span>
-            <strong>Excellent</strong>
-          </div>
-        </div>
-
-        <div class="panel panel--green" style="margin-bottom: 2rem">
-          <p class="panel__label">AI recommendation</p>
-          <p class="panel__value">Accept Shipment</p>
-          <p class="panel__note">
-            Processor Continental Coffee · Processing date verified · Farm 147 evidence complete
-          </p>
-          <div style="margin-top: 1rem">
-            <a class="btn btn--ghost" href="#loyalty" style="border-color: rgba(255,255,255,0.45)">See supplier track record</a>
-          </div>
-        </div>
-
-        <div id="loyalty">
-          <p class="section__eyebrow">Six months later</p>
-          <h2 class="section__title" style="font-size: clamp(1.6rem, 3vw, 2.2rem)">
-            Should you buy from Continental Coffee again?
-          </h2>
-          <p class="section__lead">
-            NIVI doesn’t guess—it analyzes years of shipment evidence.
-          </p>
-
-          <div class="verdict-grid">
-            <div class="stat">
-              <span>Total shipments</span>
-              <strong>142</strong>
-            </div>
-            <div class="stat">
-              <span>Avg delay</span>
-              <strong>1.4 days</strong>
-            </div>
-            <div class="stat">
-              <span>Avg moisture</span>
-              <strong>11.1%</strong>
-            </div>
-            <div class="stat">
-              <span>EU acceptance</span>
-              <strong>99.2%</strong>
-            </div>
-            <div class="stat">
-              <span>Complaints</span>
-              <strong>0.6%</strong>
-            </div>
-            <div class="stat">
-              <span>Price premium</span>
-              <strong>4.8%</strong>
-            </div>
-          </div>
-
-          <div class="panel panel--dark">
-            <p class="panel__label">Long-term recommendation</p>
-            <p class="panel__value" style="font-size: 1.6rem">Increase annual contract by 30%</p>
-            <p class="panel__note">
-              Accumulated intelligence across farm, processing, lab, and voyage performance—not a one-off certificate.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="footer">
-      <strong>NIVI Passports</strong>
-      Prototype · Continental Coffee · Farm 147 · Kodagu Arabica · Dummy data for demonstration
-    </footer>
 
     <script src="js/data.js"></script>
     <script src="js/passport.js"></script>
