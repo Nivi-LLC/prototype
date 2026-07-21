@@ -15,6 +15,8 @@ python3 -m http.server 8080
 
 Visit [http://localhost:8080](http://localhost:8080).
 
+**Live site:** [https://nivi-llc.github.io/prototype/](https://nivi-llc.github.io/prototype/)
+
 **Password:** `9999` (client-side gate for the stakeholder demo — not real security).
 
 ## Demo identity
