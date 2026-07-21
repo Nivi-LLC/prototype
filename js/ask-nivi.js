@@ -10,8 +10,14 @@
   const timerEl = document.getElementById("ask-timer");
   if (!thread || !form || !input || !keyInput) return;
 
-  const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
-  const MODEL = "z-ai/glm-5.2";
+  /* Same-origin on Netlify; GitHub Pages uses the Netlify proxy (CORS). */
+  const ASK_URL =
+    window.NIVI_ASK_PROXY_URL ||
+    (location.hostname.endsWith("netlify.app") ||
+    location.hostname === "localhost" ||
+    location.hostname === "127.0.0.1"
+      ? "/api/ask"
+      : "https://nivi-passports.netlify.app/api/ask");
   const SESSION_MS = 3 * 60 * 1000;
   const KEY_STORE = "nivi_nvidia_api_key";
   const EXP_STORE = "nivi_nvidia_session_expires";
@@ -183,19 +189,17 @@ ${JSON.stringify(data, null, 2)}`;
       { role: "user", content: question },
     ];
 
-    const res = await fetch(NVIDIA_URL, {
+    const res = await fetch(ASK_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: MODEL,
         messages,
         temperature: 0.2,
         top_p: 0.9,
         max_tokens: 2048,
-        stream: true,
       }),
     });
 

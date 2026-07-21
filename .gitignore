@@ -1,6 +1,3 @@
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
 .netlify
+node_modules
+.DS_Store

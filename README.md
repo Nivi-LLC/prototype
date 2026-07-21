@@ -27,6 +27,12 @@ Visit [http://localhost:8080](http://localhost:8080).
 
 Answers are scoped to the dummy passport in `js/data.js` (including `riskFactors`) via a strict farm-only system prompt.
 
+Chat requests go through a same-team Netlify proxy (`/api/ask` on [nivi-passports.netlify.app](https://nivi-passports.netlify.app)) so the browser can reach the model API without CORS errors. Redeploy the proxy after function changes:
+
+```bash
+npx netlify-cli deploy --prod --dir=. --functions=netlify/functions
+```
+
 ## Demo identity
 
 | Field | Value |

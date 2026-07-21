@@ -1,0 +1,12 @@
+{
+  "name": "nivi-passports-prototype",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes netlify-cli dev",
+    "deploy": "npx --yes netlify-cli deploy --prod --build"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^4.2.1"
+  }
+}
