@@ -32,6 +32,7 @@
             <button class="nav-btn" type="button" data-view="grow">Growing</button>
             <button class="nav-btn" type="button" data-view="harvest">Harvest</button>
             <button class="nav-btn" type="button" data-view="chain">Chain</button>
+            <button class="nav-btn" type="button" data-view="docs">Documents</button>
             <button class="nav-btn" type="button" data-view="trust">Trust</button>
             <button class="nav-btn" type="button" data-view="future">Future</button>
             <button class="nav-btn" type="button" data-view="ask">Ask NIVI</button>
@@ -504,6 +505,31 @@
             </div>
           </section>
 
+          <!-- DOCUMENTS -->
+          <section class="view" id="view-docs" data-title="Batch Documents">
+            <p class="section-intro">
+              Demo documents linked to Farm 147 / batch CC-AR-2026-00481. Upload adds files to this browser session only.
+            </p>
+
+            <div class="docs-upload card" id="docs-upload">
+              <div class="docs-upload__copy">
+                <p class="card__label">Upload document</p>
+                <p class="metric-note">PDF, image, or spreadsheet · demo storage in this tab only</p>
+              </div>
+              <div class="docs-upload__actions">
+                <label class="docs-upload__btn" for="docs-file-input">Choose file</label>
+                <input id="docs-file-input" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.csv,.xlsx,.doc,.docx" hidden />
+              </div>
+            </div>
+
+            <div class="docs-toolbar">
+              <p class="card__label" style="margin:0">Linked files</p>
+              <span class="docs-count" id="docs-count">0 files</span>
+            </div>
+            <ul class="docs-grid" id="docs-library" aria-live="polite"></ul>
+            <p class="metric-note" id="docs-empty" hidden>No documents yet.</p>
+          </section>
+
           <!-- TRUST -->
           <section class="view" id="view-trust" data-title="Importer Trust">
             <p class="section-intro">
@@ -703,6 +729,7 @@
     <script src="js/data.js"></script>
     <script src="js/farm-guard.js"></script>
     <script src="js/passport.js"></script>
+    <script src="js/documents.js"></script>
     <script src="js/ask-nivi.js"></script>
   </body>
 </html>

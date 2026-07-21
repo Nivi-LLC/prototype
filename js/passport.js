@@ -67,7 +67,7 @@
     });
 
     const hash = (location.hash || "").replace("#", "");
-    const allowed = ["overview", "map", "grow", "harvest", "chain", "trust", "future", "ask"];
+    const allowed = ["overview", "map", "grow", "harvest", "chain", "docs", "trust", "future", "ask"];
     setView(allowed.includes(hash) ? hash : "overview");
   }
 
