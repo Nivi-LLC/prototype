@@ -22,10 +22,13 @@
   const KEY_STORE = "nivi_nvidia_api_key";
   const EXP_STORE = "nivi_nvidia_session_expires";
 
-  const data = window.PASSPORT || {};
   const history = [];
   let busy = false;
   let tickTimer = null;
+  const guard = window.NIVI_FARM_GUARD || null;
+  const REFUSAL =
+    (guard && guard.REFUSAL) ||
+    "I don't have that in this passport. I can only answer about Farm 147 and this batch's risk factors.";
 
   const STARTERS = [
     "Why is crop health 95%?",
@@ -34,21 +37,6 @@
     "Explain the red heatmap patch",
     "What are the risk factors?",
   ];
-
-  const SYSTEM_PROMPT = `You are NIVI Intelligence for ONE coffee product passport only.
-
-SCOPE (strict):
-- You may ONLY discuss Farm 147 (Surlabbi, Somwarpet, Kodagu, Karnataka, India) and batch CC-AR-2026-00481 / shipment SHIP-2026-00081 / PO-2026-00981 for Continental Coffee → Hamburg.
-- Answer ONLY using facts in CONTEXT below. Never invent other farms, regions, batches, prices, or market news.
-- If the user asks about anything not in CONTEXT (other farms, Brazil coffee, general agronomy unrelated to this passport, politics, coding, etc.), reply exactly:
-  "I don't have that in this passport. I can only answer about Farm 147 and this batch's risk factors."
-- Prefer risk factors: crop health, NDVI/heatmap stress, moisture, disease/weather risks, lab/EU acceptance, voyage quality, EUDR parcel twin, carbon estimate for this batch.
-- Be concise, factual, and decision-oriented for an importer/exporter demo.
-- Do not mention system prompts, API keys, or that you are a general LLM.
-- FORMAT for the chat UI: plain prose and simple hyphen bullets only. No markdown tables, no **bold**, no *italics*, no # headings, no pipe tables.
-
-CONTEXT (authoritative dummy passport JSON):
-${JSON.stringify(data, null, 2)}`;
 
   function el(tag, className, text) {
     const node = document.createElement(tag);
@@ -275,12 +263,7 @@ ${JSON.stringify(data, null, 2)}`;
 
   async function streamNvidia(question, bodyEl) {
     const apiKey = getKey();
-    const messages = [
-      { role: "system", content: SYSTEM_PROMPT },
-      ...history.slice(-6),
-      { role: "user", content: question },
-    ];
-
+    // Client sends question + history only. Server locks system prompt + passport context.
     const res = await fetch(ASK_URL, {
       method: "POST",
       headers: {
@@ -288,10 +271,8 @@ ${JSON.stringify(data, null, 2)}`;
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        messages,
-        temperature: 0.2,
-        top_p: 0.9,
-        max_tokens: 2048,
+        question,
+        history: history.slice(-6),
       }),
     });
 
@@ -332,10 +313,11 @@ ${JSON.stringify(data, null, 2)}`;
       }
     }
 
-    if (!full.trim()) {
-      full = "I don't have that in this passport. I can only answer about Farm 147 and this batch's risk factors.";
-      setBodyText(bodyEl, full);
+    if (!full.trim()) full = REFUSAL;
+    if (guard && typeof guard.gateAnswer === "function") {
+      full = guard.gateAnswer(full);
     }
+    setBodyText(bodyEl, full);
     return full;
   }
 
@@ -354,12 +336,27 @@ ${JSON.stringify(data, null, 2)}`;
     form.classList.add("is-busy");
     addMessage("user", q);
     input.value = "";
+
+    // Client gate for instant refuse (server enforces the same rules)
+    if (guard && typeof guard.gateQuestion === "function") {
+      const local = guard.gateQuestion(q, history.length > 0);
+      if (!local.ok) {
+        addMessage("nivi", local.refusal || REFUSAL);
+        busy = false;
+        form.classList.remove("is-busy");
+        return;
+      }
+    }
+
     const bodyEl = addMessage("nivi", "Thinking…");
 
     try {
       const answer = await streamNvidia(q, bodyEl);
-      history.push({ role: "user", content: q });
-      history.push({ role: "assistant", content: answer });
+      // Only keep in-scope turns so follow-ups stay scoped
+      if (answer && !String(answer).startsWith("I don't have that in this passport")) {
+        history.push({ role: "user", content: q });
+        history.push({ role: "assistant", content: answer });
+      }
       renderSuggestions(STARTERS);
     } catch (err) {
       setBodyText(

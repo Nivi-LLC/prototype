@@ -27,10 +27,24 @@ Visit [http://localhost:8080](http://localhost:8080).
 
 Answers are scoped to the dummy passport in `js/data.js` (including `riskFactors`) via a strict farm-only system prompt.
 
-Chat requests go through a same-team Netlify proxy (`/api/ask` on [nivi-passports.netlify.app](https://nivi-passports.netlify.app)) so the browser can reach the model API without CORS errors. Redeploy the proxy after function changes:
+Chat requests go through a same-team Netlify proxy (`/api/ask` on [nivi-passports.netlify.app](https://nivi-passports.netlify.app)) so the browser can reach the model API without CORS errors.
+
+Farm-only access control is enforced on the **server** (not just the prompt):
+- Client sends `question` + short history only — it cannot set the system prompt or passport context
+- Input allow/block gate (jailbreaks, other farms/origins, off-topic)
+- Output filter before the reply is returned
+- Matching client gate in `js/farm-guard.js` for instant refusals
+
+Redeploy the proxy after function changes:
 
 ```bash
 npx netlify-cli deploy --prod --dir=. --functions=netlify/functions
+```
+
+If you change `js/data.js`, refresh the server copy:
+
+```bash
+node -e "const fs=require('fs');const w={};new Function('window',fs.readFileSync('js/data.js','utf8'))(w);fs.writeFileSync('netlify/functions/_shared/passport.json',JSON.stringify(w.PASSPORT,null,2));"
 ```
 
 ## Demo identity
