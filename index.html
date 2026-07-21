@@ -659,12 +659,12 @@
           <section class="view" id="view-ask" data-title="Ask NIVI Intelligence">
             <p class="section-intro">
               Ask about Farm 147 only — crop health, NDVI/heatmap, moisture, lab/EU risk, voyage, EUDR, and accept/reject.
-              Paste a temporary NVIDIA API key; each key session lasts 3 minutes, then clears.
+              Each session lasts 3 minutes, then clears.
             </p>
 
             <div class="ask-key" id="ask-key-panel">
               <div class="ask-key__row">
-                <label class="ask-key__label" for="ask-api-key">NVIDIA API key</label>
+                <label class="ask-key__label" for="ask-api-key">Session key</label>
                 <span class="ask-key__timer" id="ask-timer">No active session</span>
               </div>
               <div class="ask-key__row ask-key__controls">
@@ -674,15 +674,11 @@
                   type="password"
                   autocomplete="off"
                   spellcheck="false"
-                  placeholder="Paste NVIDIA API key for a 3-minute demo session"
+                  placeholder="Paste session key"
                 />
                 <button class="ask-key__btn" type="button" id="ask-key-save">Start 3 min</button>
                 <button class="ask-key__btn ask-key__btn--ghost" type="button" id="ask-key-clear">Clear</button>
               </div>
-              <p class="ask-key__note">
-                Key stays in this browser tab only (sessionStorage). Model: z-ai/glm-5.2 via NVIDIA integrate API.
-                Revoke the key after the demo.
-              </p>
             </div>
 
             <div class="ask">

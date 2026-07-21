@@ -1,4 +1,4 @@
-/* Ask NIVI — NVIDIA GLM chat, Farm 147 passport only, 3-minute key session */
+/* Ask NIVI — Farm 147 passport only, 3-minute key session */
 (function () {
   const thread = document.getElementById("ask-thread");
   const suggestionsEl = document.getElementById("ask-suggestions");
@@ -115,27 +115,27 @@ ${JSON.stringify(data, null, 2)}`;
     } catch (e) {}
     keyInput.value = "";
     updateTimerUI();
-    if (!silent) addMessage("nivi", "API session cleared. Paste a key and click Start 3 min to continue.");
+    if (!silent) addMessage("nivi", "Session cleared. Paste a key and click Start 3 min to continue.");
   }
 
   function startSession(key) {
     const trimmed = (key || "").trim();
     if (!trimmed) {
-      addMessage("nivi", "Paste a NVIDIA API key first, then click Start 3 min.");
+      addMessage("nivi", "Paste a session key first, then click Start 3 min.");
       return;
     }
     try {
       sessionStorage.setItem(KEY_STORE, trimmed);
       sessionStorage.setItem(EXP_STORE, String(Date.now() + SESSION_MS));
     } catch (e) {
-      addMessage("nivi", "Could not store the key in this browser session.");
+      addMessage("nivi", "Could not start a session in this browser.");
       return;
     }
     keyInput.value = "";
     updateTimerUI();
     addMessage(
       "nivi",
-      "3-minute NVIDIA session started (model z-ai/glm-5.2). Ask only about Farm 147 / this batch. Session auto-clears when time ends."
+      "3-minute session started. Ask only about Farm 147 / this batch. Session auto-clears when time ends."
     );
   }
 
@@ -170,7 +170,7 @@ ${JSON.stringify(data, null, 2)}`;
       if (!paint()) {
         clearInterval(tickTimer);
         tickTimer = null;
-        addMessage("nivi", "3-minute session ended. Key cleared. Paste again to continue the demo.");
+        addMessage("nivi", "3-minute session ended. Paste a key again to continue.");
       }
     }, 1000);
   }
@@ -201,7 +201,7 @@ ${JSON.stringify(data, null, 2)}`;
 
     if (!res.ok) {
       const errText = await res.text().catch(() => "");
-      throw new Error(`NVIDIA API ${res.status}: ${errText.slice(0, 240) || res.statusText}`);
+      throw new Error(`Request failed (${res.status}): ${errText.slice(0, 240) || res.statusText}`);
     }
 
     const reader = res.body.getReader();
@@ -250,7 +250,7 @@ ${JSON.stringify(data, null, 2)}`;
     if (!sessionActive()) {
       addMessage("user", q);
       input.value = "";
-      addMessage("nivi", "Start a 3-minute session: paste your NVIDIA API key above and click Start 3 min.");
+      addMessage("nivi", "Start a 3-minute session: paste your key above and click Start 3 min.");
       return;
     }
 
@@ -268,7 +268,7 @@ ${JSON.stringify(data, null, 2)}`;
     } catch (err) {
       setBodyText(
         bodyEl,
-        `Could not reach NVIDIA API.\n${err && err.message ? err.message : String(err)}\n\nIf this is a CORS block, use a temporary key in a supported browser session or a tiny proxy. Farm-only answers still require a live session key.`
+        `Could not get an answer.\n${err && err.message ? err.message : String(err)}`
       );
     } finally {
       busy = false;
@@ -292,7 +292,7 @@ ${JSON.stringify(data, null, 2)}`;
 
   addMessage(
     "nivi",
-    "Hi — I’m NIVI Intelligence for Farm 147 / batch CC-AR-2026-00481 only.\n\nPaste a NVIDIA API key, click Start 3 min, then ask about crop health, NDVI heatmap, moisture, lab/EU risk, voyage, EUDR, or accept/reject.\n\nI will refuse anything outside this passport."
+    "Hi — I’m NIVI Intelligence for Farm 147 / batch CC-AR-2026-00481 only.\n\nStart a 3-minute session, then ask about crop health, NDVI heatmap, moisture, lab/EU risk, voyage, EUDR, or accept/reject.\n\nI will refuse anything outside this passport."
   );
   renderSuggestions(STARTERS);
   updateTimerUI();
