@@ -46,4 +46,4 @@ Static HTML + CSS + vanilla JS. No build step.
 
 ## Design notes
 
-Redesigned to match the **Tanee Smart Farming** UI kit: floating dark icon sidebar, light gray canvas, white cards, green health accents, greenhouse-style monitoring grid, sector map view, device list, camera card, and journey task rail—applied to the Continental Coffee / Farm 147 passport story.
+Tanee-inspired light dashboard with **NIVI Passports** brand on the left header, named top-center navigation (Overview · Farm Map · Growing · Harvest · Chain · Trust · Future), monitoring cards, sector map, and a Future Intelligence view covering AI agents, EUDR digital twins, rural IoT, open APIs, carbon reporting, and first-mile integrity.

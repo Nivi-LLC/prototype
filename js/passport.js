@@ -36,7 +36,7 @@
 
   function setView(viewId) {
     const views = $$(".view");
-    const buttons = $$(".nav-btn[data-view]");
+    const buttons = $$(".nav-btn[data-view], .brand[data-view]");
     let active = null;
 
     views.forEach((view) => {
@@ -45,7 +45,7 @@
       if (on) active = view;
     });
 
-    buttons.forEach((btn) => {
+    $$(".nav-btn[data-view]").forEach((btn) => {
       btn.classList.toggle("is-active", btn.dataset.view === viewId);
     });
 
@@ -58,16 +58,16 @@
       history.replaceState(null, "", `#${viewId}`);
     } catch (e) {}
 
-    window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+    window.scrollTo({ top: 0, behavior: "auto" });
   }
 
   function setupNav() {
-    $$(".nav-btn[data-view]").forEach((btn) => {
+    $$(".nav-btn[data-view], .brand[data-view]").forEach((btn) => {
       btn.addEventListener("click", () => setView(btn.dataset.view));
     });
 
     const hash = (location.hash || "").replace("#", "");
-    const allowed = ["overview", "map", "grow", "harvest", "chain", "trust"];
+    const allowed = ["overview", "map", "grow", "harvest", "chain", "trust", "future"];
     setView(allowed.includes(hash) ? hash : "overview");
   }
 

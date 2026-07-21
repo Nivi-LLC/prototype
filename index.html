@@ -19,43 +19,36 @@
   </head>
   <body>
     <div class="app">
-      <aside class="sidebar" aria-label="Passport navigation">
-        <div class="sidebar__inner">
-          <div class="sidebar__logo" title="NIVI Passports">N</div>
-          <button class="nav-btn is-active" type="button" data-view="overview" aria-label="Overview" title="Overview">
-            <svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5z"/></svg>
-          </button>
-          <button class="nav-btn" type="button" data-view="map" aria-label="Farm map" title="Farm map">
-            <svg viewBox="0 0 24 24"><path d="M9 4 3 6.5V20l6-2.5 6 2.5 6-2.5V4l-6 2.5L9 4z"/><path d="M9 4v13.5M15 6.5V20"/></svg>
-          </button>
-          <button class="nav-btn" type="button" data-view="grow" aria-label="Growing season" title="Growing season">
-            <svg viewBox="0 0 24 24"><path d="M12 21V11"/><path d="M12 11c0-4 3-7 8-7-1 5-4 7-8 7z"/><path d="M12 13c0-3.5-3-6-7-6 1 4 3.5 6 7 6z"/></svg>
-          </button>
-          <button class="nav-btn" type="button" data-view="harvest" aria-label="Harvest" title="Harvest">
-            <svg viewBox="0 0 24 24"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 10a5 5 0 0 1 10 0c0 4-5 7-5 7s-5-3-5-7z"/></svg>
-          </button>
-          <button class="nav-btn" type="button" data-view="chain" aria-label="Supply chain" title="Supply chain">
-            <svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="8.5" y="13" width="7" height="7" rx="1.5"/><path d="M10 7.5h4M12 11v2"/></svg>
-          </button>
-          <div class="sidebar__spacer"></div>
-          <button class="nav-btn" type="button" data-view="trust" aria-label="Importer trust" title="Importer trust">
-            <svg viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/></svg>
-          </button>
-        </div>
-      </aside>
-
       <div class="main">
         <header class="topbar">
-          <h1 class="topbar__title" id="view-title">Farm Monitoring</h1>
+          <button class="brand" type="button" data-view="overview" aria-label="NIVI Passports home">
+            <span class="brand__mark" aria-hidden="true">N</span>
+            <span class="brand__name">NIVI Passports</span>
+          </button>
+
+          <nav class="topnav" aria-label="Passport sections">
+            <button class="nav-btn is-active" type="button" data-view="overview">Overview</button>
+            <button class="nav-btn" type="button" data-view="map">Farm Map</button>
+            <button class="nav-btn" type="button" data-view="grow">Growing</button>
+            <button class="nav-btn" type="button" data-view="harvest">Harvest</button>
+            <button class="nav-btn" type="button" data-view="chain">Chain</button>
+            <button class="nav-btn" type="button" data-view="trust">Trust</button>
+            <button class="nav-btn" type="button" data-view="future">Future</button>
+          </nav>
+
           <div class="topbar__actions">
             <span class="pill"><span class="dot" aria-hidden="true"></span> 0 Alert</span>
             <label class="visually-hidden" for="sector-select">Sector</label>
             <select class="select-like" id="sector-select" aria-label="Sector">
               <option>Farm 147 · Arabica Block A</option>
             </select>
-            <span class="pill pill--soft">Batch CC-AR-2026-00481</span>
           </div>
         </header>
+
+        <div class="view-heading">
+          <h2 id="view-title">Farm Monitoring</h2>
+          <span class="pill pill--soft">Batch CC-AR-2026-00481</span>
+        </div>
 
         <div class="workspace">
           <!-- OVERVIEW — Tanee greenhouse monitoring layout -->
@@ -543,6 +536,120 @@
               <div class="card card--green">
                 <p class="metric-value" style="font-size:1.4rem">Increase annual contract by 30%</p>
                 <p class="metric-note">Evidence across farm, processing, lab, and voyage—not a one-off certificate.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- FUTURE — Product Intelligence OS roadmap -->
+          <section class="view" id="view-future" data-title="Future Intelligence">
+            <p class="section-intro">
+              NIVI Passports is moving from event tracking to critical trade infrastructure—autonomous decisions,
+              regulatory digital twins, rural IoT, open interoperability, carbon proof, and first-mile truth.
+            </p>
+
+            <div class="card card--green" style="margin-bottom:12px">
+              <p class="card__label"><span class="future-num">AI</span> Conversational agronomy assistant</p>
+              <p class="metric-value" style="font-size:1.55rem">Not just 95% health—why, and what next</p>
+              <div class="agent-bubble">
+                <strong>Agent preview · Farm 147</strong>
+                Crop health is strong (95%). Localized NDVI stress on the north edge is consistent with lower soil
+                moisture after last week’s dry spell. Recommended action: schedule targeted drip on Block A within
+                36 hours. Compared scenarios: irrigation now (+2.1% yield probability) vs wait 5 days (−1.4% /
+                higher leaf-rust risk). I can notify the cooperative and open a work order.
+              </div>
+            </div>
+
+            <div class="future-grid">
+              <div class="card future-card">
+                <p class="card__label"><span class="future-num">1</span> Autonomous decisions</p>
+                <p class="metric-note" style="margin-top:0.65rem">
+                  Generative AI agents explain health changes, compare intervention scenarios, and can schedule
+                  irrigation or pest control—not only display a score.
+                </p>
+                <ul class="facts" style="margin-top:0.75rem">
+                  <li><span>Mode</span><strong>Advisory → Autopilot</strong></li>
+                  <li><span>Actions</span><strong>Irrigate · Scout · Alert</strong></li>
+                  <li><span>Owner</span><strong>Human confirms exceptions</strong></li>
+                </ul>
+              </div>
+
+              <div class="card future-card">
+                <p class="card__label"><span class="future-num">2</span> Mandatory digital twin</p>
+                <p class="metric-note" style="margin-top:0.65rem">
+                  EUDR and similar laws require parcel-level, deforestation-free proof. Batch-to-land twins become
+                  a market-access requirement—not optional branding.
+                </p>
+                <ul class="facts" style="margin-top:0.75rem">
+                  <li><span>EUDR status</span><strong class="badge">Ready path</strong></li>
+                  <li><span>Parcel link</span><strong>Farm 147 · Block A</strong></li>
+                  <li><span>Proof</span><strong>GPS + sat history</strong></li>
+                </ul>
+              </div>
+
+              <div class="card future-card">
+                <p class="card__label"><span class="future-num">3</span> Rural IoT · LoRaWAN</p>
+                <p class="metric-note" style="margin-top:0.65rem">
+                  LPWAN / NB-IoT makes 90% automatic capture affordable for smallholder cooperatives across miles
+                  of farmland—without expensive cellular.
+                </p>
+                <ul class="facts" style="margin-top:0.75rem">
+                  <li><span>Network</span><strong>LoRaWAN / NB-IoT</strong></li>
+                  <li><span>Nodes online</span><strong>6 / 6</strong></li>
+                  <li><span>Auto capture</span><strong>Target 90%</strong></li>
+                </ul>
+              </div>
+
+              <div class="card future-card">
+                <p class="card__label"><span class="future-num">4</span> Open interoperability</p>
+                <p class="metric-note" style="margin-top:0.65rem">
+                  The OS model wins when farm data talks to shipper logistics and retailer inventory in real time
+                  via open APIs—ending soil/logistics point solutions.
+                </p>
+                <ul class="facts" style="margin-top:0.75rem">
+                  <li><span>APIs</span><strong>Farm · Plant · Ocean</strong></li>
+                  <li><span>Partners</span><strong>Shipper · Retailer</strong></li>
+                  <li><span>Standard</span><strong>Event + batch schema</strong></li>
+                </ul>
+              </div>
+
+              <div class="card future-card">
+                <p class="card__label"><span class="future-num">5</span> Carbon as a service</p>
+                <p class="metric-note" style="margin-top:0.65rem">
+                  Growing-season and voyage sensors feed verified sustainability reports. Buyers ask for carbon
+                  per mile—platforms that answer command premiums.
+                </p>
+                <ul class="facts" style="margin-top:0.75rem">
+                  <li><span>Batch CO₂e</span><strong>1.84 t (est.)</strong></li>
+                  <li><span>Scope</span><strong>Farm → Hamburg</strong></li>
+                  <li><span>Report</span><strong>Auto draft ready</strong></li>
+                </ul>
+              </div>
+
+              <div class="card future-card">
+                <p class="card__label"><span class="future-num">6</span> First-mile truth</p>
+                <p class="metric-note" style="margin-top:0.65rem">
+                  Blockchain certificate chains at farm registration and harvest lock GPS, scale, and moisture
+                  evidence so organic or origin claims can’t be rewritten later.
+                </p>
+                <ul class="facts" style="margin-top:0.75rem">
+                  <li><span>Anchor</span><strong>Harvest event hash</strong></li>
+                  <li><span>Batch</span><strong>CC-AR-2026-00481</strong></li>
+                  <li><span>Integrity</span><strong>Immutable first mile</strong></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <p class="card__label">Why this matters for Continental Coffee</p>
+              <p class="metric-note" style="margin-top:0.65rem">
+                Product Intelligence becomes the critical infrastructure to sell into Europe: prove the land,
+                prove the journey, prove the carbon, and let AI recommend the next action—not just store PDFs.
+              </p>
+              <div class="chips" style="margin-top:0.85rem">
+                <span class="chip">EU market access</span>
+                <span class="chip">Deforestation-free twin</span>
+                <span class="chip">Premium sustainability</span>
+                <span class="chip">Trusted first mile</span>
               </div>
             </div>
           </section>
