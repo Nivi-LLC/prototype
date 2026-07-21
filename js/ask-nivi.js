@@ -34,8 +34,8 @@
     "Why is crop health 95%?",
     "Should I accept this shipment?",
     "Is Farm 147 EUDR ready?",
-    "Reply in Kannada: should I accept this shipment?",
-    "Reply in Telugu: what are the risk factors?",
+    "Explain the red heatmap patch",
+    "What are the risk factors?",
   ];
 
   function el(tag, className, text) {
@@ -313,12 +313,9 @@
       }
     }
 
-    if (!full.trim()) {
-      full =
-        guard && typeof guard.refusalFor === "function" ? guard.refusalFor(question) : REFUSAL;
-    }
+    if (!full.trim()) full = REFUSAL;
     if (guard && typeof guard.gateAnswer === "function") {
-      full = guard.gateAnswer(full, question);
+      full = guard.gateAnswer(full);
     }
     setBodyText(bodyEl, full);
     return full;
@@ -356,10 +353,7 @@
     try {
       const answer = await streamNvidia(q, bodyEl);
       // Only keep in-scope turns so follow-ups stay scoped
-      const refused =
-        String(answer).includes("I don't have that in this passport") ||
-        String(answer).includes("ಈ ಪಾಸ್") ||
-        String(answer).includes("ఈ పాస్");
+      const refused = String(answer).includes("I don't have that in this passport");
       if (answer && !refused) {
         history.push({ role: "user", content: q });
         history.push({ role: "assistant", content: answer });
@@ -392,7 +386,7 @@
 
   addMessage(
     "nivi",
-    "Hi — I’m NIVI Intelligence for Farm 147 / batch CC-AR-2026-00481 only.\n\nStart a 3-minute session, then ask about crop health, NDVI heatmap, moisture, lab/EU risk, voyage, EUDR, or accept/reject.\n\nI can reply in English, Kannada, or Telugu. I will refuse anything outside this passport."
+    "Hi — I’m NIVI Intelligence for Farm 147 / batch CC-AR-2026-00481 only.\n\nStart a 3-minute session, then ask about crop health, NDVI heatmap, moisture, lab/EU risk, voyage, EUDR, or accept/reject.\n\nI will refuse anything outside this passport."
   );
   renderSuggestions(STARTERS);
   updateTimerUI();

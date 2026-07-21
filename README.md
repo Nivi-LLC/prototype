@@ -24,7 +24,6 @@ Visit [http://localhost:8080](http://localhost:8080).
 1. Open the **Ask NIVI** tab.
 2. Paste a session key and click **Start 3 min** (session auto-clears after 3 minutes).
 3. Ask about Farm 147 only — crop health, NDVI/heatmap, moisture, lab/EU risk, voyage, EUDR, accept/reject.
-   Replies support **English**, **Kannada**, and **Telugu** (ask in that language, or say “Reply in Kannada/Telugu …”).
 
 Answers are scoped to the dummy passport in `js/data.js` (including `riskFactors`) via a strict farm-only system prompt.
 

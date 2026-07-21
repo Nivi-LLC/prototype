@@ -1,4 +1,5 @@
 import {
+  REFUSAL,
   buildSystemPrompt,
   gateAnswer,
   gateQuestion,
@@ -164,7 +165,7 @@ export default async (req: Request) => {
   }
 
   const raw = await readUpstreamText(upstream);
-  const safe = gateAnswer(raw, question);
+  const safe = gateAnswer(raw || REFUSAL);
   return sseResponse(req, safe);
 };
 
