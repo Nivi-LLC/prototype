@@ -31,11 +31,11 @@
     "I don't have that in this passport. I can only answer about Farm 147 and this batch's risk factors.";
 
   const STARTERS = [
+    "Why is crop health 95%?",
     "Should I accept this shipment?",
-    "What should I do next on Farm 147?",
-    "Simulate delaying this decision 7 days",
-    "What is the financial impact of accepting?",
-    "How does this compare with peer Arabica lots?",
+    "Is Farm 147 EUDR ready?",
+    "Explain the red heatmap patch",
+    "What are the risk factors?",
   ];
 
   function el(tag, className, text) {
@@ -386,7 +386,7 @@
 
   addMessage(
     "nivi",
-    "Hi — I’m the NIVI PIOS copilot for Farm 147 / batch CC-AR-2026-00481 only.\n\nStart a 3-minute session, then ask what to do next. I answer with Recommendation, Why, Confidence, Business impact, and Actions.\n\nI refuse anything outside this product identity."
+    "Hi — I’m NIVI Intelligence for Farm 147 / batch CC-AR-2026-00481 only.\n\nStart a 3-minute session, then ask about crop health, NDVI heatmap, moisture, lab/EU risk, voyage, EUDR, or accept/reject.\n\nI will refuse anything outside this passport."
   );
   renderSuggestions(STARTERS);
   updateTimerUI();

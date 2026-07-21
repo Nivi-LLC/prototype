@@ -25,13 +25,13 @@
       document.body.innerHTML =
         '<div class="gate">' +
         '<form class="gate-card" id="nivi-gate-form" autocomplete="off">' +
-        '<div class="gate-brand">NIVI PIOS</div>' +
-        '<p class="gate-sub">Product Intelligence Operating System</p>' +
+        '<div class="gate-brand">NIVI Passports</div>' +
+        '<p class="gate-sub">Prototype access</p>' +
         '<label class="gate-label" for="nivi-gate-pass">Password</label>' +
         '<input class="gate-input" id="nivi-gate-pass" type="password" inputmode="numeric" maxlength="16" placeholder="Enter password" autofocus />' +
         '<p class="gate-error" id="nivi-gate-error" hidden>Incorrect password</p>' +
-        '<button class="gate-btn" type="submit">Enter PIOS</button>' +
-        '<p class="gate-note">The AI OS for trusted global trade · synthetic demo data</p>' +
+        '<button class="gate-btn" type="submit">Open passport</button>' +
+        '<p class="gate-note">Stakeholder demo · synthetic data only</p>' +
         "</form></div>";
 
       var form = document.getElementById("nivi-gate-form");
