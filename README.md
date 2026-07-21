@@ -19,6 +19,9 @@ Visit [http://localhost:8080](http://localhost:8080).
 
 **Password:** `9999` (client-side gate for the stakeholder demo — not real security).
 
+### Ask NIVI Intelligence
+Open the **Ask NIVI** tab. Type a question or tap a suggestion chip. Replies are offline/scripted against this passport’s dummy data (crop health, EUDR, accept shipment, carbon, harvest, voyage). No API key required for the demo.
+
 ## Demo identity
 
 | Field | Value |

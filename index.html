@@ -34,6 +34,7 @@
             <button class="nav-btn" type="button" data-view="chain">Chain</button>
             <button class="nav-btn" type="button" data-view="trust">Trust</button>
             <button class="nav-btn" type="button" data-view="future">Future</button>
+            <button class="nav-btn" type="button" data-view="ask">Ask NIVI</button>
           </nav>
 
           <div class="topbar__actions">
@@ -75,7 +76,7 @@
                     </div>
                   </div>
                   <div class="map-panel">
-                    <img src="assets/farm-ndvi-map.png" alt="Farm 147 GPS boundary with NDVI overlay" />
+                    <img src="assets/farm-boundary.png" alt="Farm 147 GPS boundary over coffee plantation" />
                     <div class="map-tag">
                       <strong>Farm 147</strong>
                       GPS boundary verified
@@ -198,14 +199,14 @@
 
               <div class="dash__right">
                 <div class="card camera-card">
-                  <img src="assets/beans-closeup.jpg" alt="Coffee beans from Farm 147 batch" />
+                  <img src="assets/farm-heatmap.png" alt="Crop health heatmap for Farm 147 Block A" />
                   <div class="camera-overlay">
                     <div class="camera-overlay__top">
-                      <strong>Camera 1</strong>
-                      <span>1 / 2</span>
+                      <strong>Crop health map</strong>
+                      <span>Live twin</span>
                     </div>
                     <div class="camera-overlay__bottom">
-                      <span>Cherry / green bean evidence</span>
+                      <span>NDVI heatmap · Block A</span>
                       <span>HD</span>
                     </div>
                   </div>
@@ -306,7 +307,7 @@
 
               <div class="map-stage">
                 <div class="map-stage__media">
-                  <img src="assets/farm-ndvi-map.png" alt="Satellite farm map with vegetation heatmap" />
+                  <img src="assets/farm-heatmap.png" alt="Satellite farm map with vegetation heatmap" />
                   <div class="map-tools" aria-hidden="true">
                     <button type="button">+</button>
                     <button type="button">−</button>
@@ -400,7 +401,7 @@
             </p>
             <div class="view-grid">
               <div class="card camera-card" style="min-height:280px">
-                <img src="assets/beans-closeup.jpg" alt="Harvest batch green coffee beans" style="height:100%;min-height:280px" />
+                <img src="assets/farm-boundary.png" alt="Harvest plot GPS boundary for Farm 147" />
                 <div class="camera-overlay">
                   <div class="camera-overlay__top">
                     <strong data-bind="batch"></strong>
@@ -653,11 +654,34 @@
               </div>
             </div>
           </section>
+
+          <!-- ASK NIVI -->
+          <section class="view" id="view-ask" data-title="Ask NIVI Intelligence">
+            <p class="section-intro">
+              Conversational product intelligence for this passport. Ask about Farm 147, crop health, lab risk,
+              EUDR, carbon, or whether to accept the shipment—demo replies use synthetic batch data.
+            </p>
+            <div class="ask glass-panel">
+              <div class="ask__thread" id="ask-thread" aria-live="polite"></div>
+              <div class="ask__suggestions" id="ask-suggestions"></div>
+              <form class="ask__composer glass-bar" id="ask-form" autocomplete="off">
+                <input
+                  class="ask__input"
+                  id="ask-input"
+                  type="text"
+                  placeholder="Ask NIVI about this coffee passport…"
+                  maxlength="400"
+                />
+                <button class="ask__send" type="submit">Send</button>
+              </form>
+            </div>
+          </section>
         </div>
       </div>
     </div>
 
     <script src="js/data.js"></script>
     <script src="js/passport.js"></script>
+    <script src="js/ask-nivi.js"></script>
   </body>
 </html>

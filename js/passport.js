@@ -67,7 +67,7 @@
     });
 
     const hash = (location.hash || "").replace("#", "");
-    const allowed = ["overview", "map", "grow", "harvest", "chain", "trust", "future"];
+    const allowed = ["overview", "map", "grow", "harvest", "chain", "trust", "future", "ask"];
     setView(allowed.includes(hash) ? hash : "overview");
   }
 
@@ -80,9 +80,32 @@
     });
   }
 
+  function setupNavSwipe() {
+    const nav = document.querySelector(".topnav");
+    if (!nav) return;
+    let startX = 0;
+    nav.addEventListener(
+      "touchstart",
+      (e) => {
+        startX = e.changedTouches[0].clientX;
+      },
+      { passive: true }
+    );
+    nav.addEventListener(
+      "touchend",
+      (e) => {
+        const dx = e.changedTouches[0].clientX - startX;
+        if (Math.abs(dx) < 40) return;
+        nav.scrollBy({ left: dx < 0 ? 140 : -140, behavior: "smooth" });
+      },
+      { passive: true }
+    );
+  }
+
   fillText();
   buildDocs();
   buildChips();
   setupNav();
   setupSectorCards();
+  setupNavSwipe();
 })();
