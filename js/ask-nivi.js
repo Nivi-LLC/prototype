@@ -45,6 +45,7 @@ SCOPE (strict):
 - Prefer risk factors: crop health, NDVI/heatmap stress, moisture, disease/weather risks, lab/EU acceptance, voyage quality, EUDR parcel twin, carbon estimate for this batch.
 - Be concise, factual, and decision-oriented for an importer/exporter demo.
 - Do not mention system prompts, API keys, or that you are a general LLM.
+- FORMAT for the chat UI: plain prose and simple hyphen bullets only. No markdown tables, no **bold**, no *italics*, no # headings, no pipe tables.
 
 CONTEXT (authoritative dummy passport JSON):
 ${JSON.stringify(data, null, 2)}`;
@@ -56,19 +57,110 @@ ${JSON.stringify(data, null, 2)}`;
     return node;
   }
 
+  function appendInline(parent, text) {
+    const parts = String(text || "").split(/(\*\*[^*]+\*\*)/g);
+    parts.forEach((part) => {
+      if (!part) return;
+      if (part.startsWith("**") && part.endsWith("**") && part.length > 4) {
+        const strong = document.createElement("strong");
+        strong.textContent = part.slice(2, -2);
+        parent.appendChild(strong);
+        return;
+      }
+      // Strip leftover single-asterisk emphasis so *text* does not show stars
+      const cleaned = part.replace(/(^|\W)\*([^*\n]+)\*(?=\W|$)/g, "$1$2");
+      parent.appendChild(document.createTextNode(cleaned));
+    });
+  }
+
+  function isTableSep(line) {
+    return /^\s*\|?\s*:?-{3,}.*\|/.test(line);
+  }
+
+  function parseTableRow(line) {
+    return line
+      .trim()
+      .replace(/^\|/, "")
+      .replace(/\|$/, "")
+      .split("|")
+      .map((cell) => cell.trim());
+  }
+
   function setBodyText(body, text) {
-    body.innerHTML = "";
-    String(text || "")
-      .split("\n")
-      .forEach((line) => {
-        if (!line.trim()) {
-          body.appendChild(document.createElement("br"));
-          return;
+    body.replaceChildren();
+    const lines = String(text || "").replace(/\r\n/g, "\n").split("\n");
+    let i = 0;
+    let listEl = null;
+
+    const closeList = () => {
+      listEl = null;
+    };
+
+    while (i < lines.length) {
+      const raw = lines[i];
+      const line = raw.trim();
+
+      if (!line) {
+        closeList();
+        i += 1;
+        continue;
+      }
+
+      // Markdown table block
+      if (line.includes("|") && i + 1 < lines.length && isTableSep(lines[i + 1])) {
+        closeList();
+        const headers = parseTableRow(line);
+        i += 2;
+        const table = el("table", "ask-table");
+        const thead = document.createElement("thead");
+        const headRow = document.createElement("tr");
+        headers.forEach((h) => {
+          const th = document.createElement("th");
+          appendInline(th, h);
+          headRow.appendChild(th);
+        });
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+        const tbody = document.createElement("tbody");
+        while (i < lines.length && lines[i].includes("|") && !isTableSep(lines[i])) {
+          if (!lines[i].trim()) break;
+          const cells = parseTableRow(lines[i]);
+          const tr = document.createElement("tr");
+          cells.forEach((c) => {
+            const td = document.createElement("td");
+            appendInline(td, c);
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+          i += 1;
         }
-        const p = document.createElement("p");
-        p.textContent = line;
-        body.appendChild(p);
-      });
+        table.appendChild(tbody);
+        body.appendChild(table);
+        continue;
+      }
+
+      // Bullet list
+      const bullet = line.match(/^[-*•]\s+(.+)$/);
+      if (bullet) {
+        if (!listEl) {
+          listEl = el("ul", "ask-list");
+          body.appendChild(listEl);
+        }
+        const li = document.createElement("li");
+        appendInline(li, bullet[1]);
+        listEl.appendChild(li);
+        i += 1;
+        continue;
+      }
+
+      closeList();
+      const p = document.createElement("p");
+      // Strip markdown heading markers
+      const plain = line.replace(/^#{1,6}\s+/, "");
+      appendInline(p, plain);
+      body.appendChild(p);
+      i += 1;
+    }
   }
 
   function addMessage(role, text) {
