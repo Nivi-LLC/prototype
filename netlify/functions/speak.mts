@@ -1,6 +1,9 @@
 /**
- * Chatterbox Multilingual TTS via NVCF gRPC.
- * Docs path: grpc.nvcf.nvidia.com:443 + function-id metadata (HTTP invoke returns 404).
+ * NVIDIA Riva TTS via NVCF gRPC.
+ *
+ * Chatterbox (ddacc747-…) is not entitled on many NGC accounts (“Function … Not found for account”).
+ * Default is Magpie Multilingual, which is the hosted TTS most build.nvidia.com keys can invoke.
+ * Override with Netlify env: TTS_FUNCTION_ID, TTS_VOICE, TTS_LANGUAGE.
  */
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
@@ -8,13 +11,28 @@ import { tmpdir } from "node:os";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 
-const FUNCTION_ID = "ddacc747-1269-4fab-bfd9-8f593dead106";
 const GRPC_HOST = "grpc.nvcf.nvidia.com:443";
-const VOICE = "Chatterbox-Multilingual.en-US.Male";
-const LANGUAGE = "en-US";
 const SAMPLE_RATE_HZ = 22050;
 
-/** Flattened Riva TTS protos (no filesystem include path issues on Netlify). */
+// Magpie Multilingual (hosted) — Chatterbox function-id often returns NotFound for the account
+const DEFAULT_FUNCTION_ID = "877104f7-e885-42b9-8de8-f6e4c6303969";
+const DEFAULT_VOICE = "Magpie-Multilingual.EN-US.Aria";
+const DEFAULT_LANGUAGE = "en-US";
+
+function env(name: string, fallback: string) {
+  try {
+    // Netlify Functions (Node): process.env; avoid Deno-only Netlify.env in this bundler path
+    const v = typeof process !== "undefined" ? process.env?.[name] : undefined;
+    return (v && String(v).trim()) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+const FUNCTION_ID = env("TTS_FUNCTION_ID", DEFAULT_FUNCTION_ID);
+const VOICE = env("TTS_VOICE", DEFAULT_VOICE);
+const LANGUAGE = env("TTS_LANGUAGE", DEFAULT_LANGUAGE);
+
 const RIVA_TTS_PROTO = `
 syntax = "proto3";
 package nvidia.riva.tts;
@@ -64,21 +82,8 @@ message SynthesizeSpeechResponse {
   RequestId id = 100;
 }
 
-message RivaSynthesisConfigRequest {
-  string model_name = 1;
-}
-
-message RivaSynthesisConfigResponse {
-  message Config {
-    string model_name = 1;
-    map<string, string> parameters = 2;
-  }
-  repeated Config model_config = 1;
-}
-
 service RivaSpeechSynthesis {
   rpc Synthesize(SynthesizeSpeechRequest) returns (SynthesizeSpeechResponse) {}
-  rpc GetRivaSynthesisConfig(RivaSynthesisConfigRequest) returns (RivaSynthesisConfigResponse) {}
 }
 `;
 
@@ -180,13 +185,28 @@ function synthesizeGrpc(authHeader: string, text: string): Promise<Buffer> {
         }
         const audio = res?.audio;
         if (!audio || !audio.length) {
-          reject(new Error("Empty audio from Chatterbox gRPC"));
+          reject(new Error("Empty audio from NVIDIA TTS"));
           return;
         }
         resolve(Buffer.isBuffer(audio) ? audio : Buffer.from(audio));
       }
     );
   });
+}
+
+function friendlyError(err: any): string {
+  const detail = String((err && (err.details || err.message)) || "Speak proxy failed");
+  if (/Not found for account/i.test(detail) || err?.code === grpc.status.NOT_FOUND) {
+    return (
+      "This NVIDIA key cannot access the configured TTS model (function not found for your account). " +
+      "Open the model page on build.nvidia.com, click Get API Key for that model, then paste the new key in Voice session. " +
+      `Detail: ${detail.slice(0, 220)}`
+    );
+  }
+  if (/Unauthenticated|Authentication failed/i.test(detail) || err?.code === grpc.status.UNAUTHENTICATED) {
+    return "Voice key rejected by NVIDIA. Paste a valid NVIDIA API key and click Start voice 10 min again.";
+  }
+  return detail.slice(0, 320);
 }
 
 export default async (req: Request) => {
@@ -223,9 +243,6 @@ export default async (req: Request) => {
 
     return new Response(wav, { status: 200, headers });
   } catch (err: any) {
-    const detail =
-      (err && (err.details || err.message)) ||
-      (err instanceof Error ? err.message : "Speak proxy failed");
     const code = typeof err?.code === "number" ? err.code : null;
     const status =
       code === grpc.status.UNAUTHENTICATED || code === grpc.status.PERMISSION_DENIED
@@ -235,7 +252,7 @@ export default async (req: Request) => {
           : code === grpc.status.INVALID_ARGUMENT
             ? 400
             : 502;
-    return jsonResponse(req, status, { error: String(detail).slice(0, 320) });
+    return jsonResponse(req, status, { error: friendlyError(err) });
   }
 };
 
