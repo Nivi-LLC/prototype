@@ -7,10 +7,12 @@
   const keyInput = document.getElementById("ask-api-key");
   const keySave = document.getElementById("ask-key-save");
   const keyClear = document.getElementById("ask-key-clear");
+  const keyClearLive = document.getElementById("ask-key-clear-live");
   const timerEl = document.getElementById("ask-timer");
   const voiceInput = document.getElementById("ask-voice-key");
   const voiceSave = document.getElementById("ask-voice-save");
   const voiceClear = document.getElementById("ask-voice-clear");
+  const voiceClearLive = document.getElementById("ask-voice-clear-live");
   const voiceTimerEl = document.getElementById("ask-voice-timer");
   const chatBlock = document.getElementById("ask-chat-block");
   const voiceBlock = document.getElementById("ask-voice-block");
@@ -771,6 +773,7 @@
 
   keySave.addEventListener("click", () => startSession(keyInput.value));
   keyClear.addEventListener("click", () => clearSession(false));
+  if (keyClearLive) keyClearLive.addEventListener("click", () => clearSession(false));
   keyInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -780,6 +783,7 @@
 
   if (voiceSave) voiceSave.addEventListener("click", () => startVoiceSession(voiceInput && voiceInput.value));
   if (voiceClear) voiceClear.addEventListener("click", () => clearVoiceSession(false));
+  if (voiceClearLive) voiceClearLive.addEventListener("click", () => clearVoiceSession(false));
   if (voiceInput) {
     voiceInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {

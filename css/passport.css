@@ -1217,6 +1217,33 @@ a {
   letter-spacing: 0;
   font-weight: 700;
 }
+
+.ask-key__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.ask-key__clear-live {
+  display: none;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.28rem 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 750;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.ask-key__block.is-active .ask-key__clear-live {
+  display: inline-flex;
+}
+
+.ask-key__clear-live:hover {
+  border-color: var(--green);
+  color: var(--green-deep);
+}
   margin-bottom: 12px;
 }
 
