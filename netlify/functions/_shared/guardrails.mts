@@ -4,7 +4,7 @@ export const REFUSAL =
   "I only have information for Farm 147 and this batch (CC-AR-2026-00481).";
 
 const ALLOW =
-  /\b(farm\s*147|batch|shipment|po-?2026|ship-?2026|cc-ar|crop|health|ndvi|heatmap|moisture|eudr|accept|reject|risk|lab|voyage|container|carbon|kodagu|surlabbi|somwarpet|continental|arabica|coffee|harvest|passport|quality|hamburg|certificate|ochratoxin|pesticide|weather|disease|canopy|polygon|gps|roasting|importer|verdict|eu\b|mrl|iot|seal|phytosanitary|coa|pallet|bag|truck|processing|warehouse|customs|twin|satellite|stress|dense|sparse|yield|elevation|soil|rainfall|block\s*a|history|historical|origin|journey|story|background|previous|past|memory|bean|cherry|grade|plantation|shade|farmer|ramesh|gowda|tell me|about this|this batch|this farm)\b/i;
+  /\b(farm\s*147|batch|shipment|po-?2026|ship-?2026|cc-ar|crop|health|ndvi|heatmap|moisture|eudr|accept|reject|risk|lab|voyage|container|carbon|kodagu|surlabbi|somwarpet|continental|arabica|coffee|harvest|passport|quality|hamburg|certificate|ochratoxin|pesticide|weather|disease|canopy|polygon|gps|roasting|importer|verdict|eu\b|mrl|iot|seal|phytosanitary|coa|pallet|bag|truck|processing|warehouse|customs|twin|satellite|stress|dense|sparse|yield|elevation|soil|rainfall|block\s*a|history|historical|origin|journey|story|background|previous|past|memory|bean|cherry|grade|plantation|shade|farmer|ramesh|gowda|tell me|about this|this batch|this farm|price|pricing|market|rate|cost|₹|inr|eur|euro|rupee|100\s*g|100g|gram|kg|fob|retail|premium)\b/i;
 
 const BLOCK = [
   /ignore\s+(all\s+)?(previous|prior|above|earlier)/i,
@@ -49,10 +49,11 @@ export function gateAnswer(answer: string): string {
 export function buildSystemPrompt(): string {
   return `You are NIVI Intelligence for Continental Coffee, Farm 147, Kodagu, India (batch CC-AR-2026-00481 → Hamburg).
 
-Answer helpfully using only the CONTEXT below. Cover farm/coffee history for this farm and batch, crop health, NDVI/heatmap, harvest, processing, lab/EU risk, voyage, EUDR, carbon, and accept/reject when asked.
-For "coffee history" / origin / journey questions, summarize this farm's identity, growing practices, prior quality/yield, harvest-to-shipment story, and Product Memory-style lifecycle facts from CONTEXT — do not give world coffee history.
+Answer helpfully using only the CONTEXT below. Cover farm/coffee history for this farm and batch, crop health, NDVI/heatmap, harvest, processing, lab/EU risk, voyage, EUDR, carbon, accept/reject, and marketPricing when asked.
+For "coffee history" / origin / journey questions, summarize this farm's identity, growing practices, prior quality/yield, harvest-to-shipment story from CONTEXT — do not give world coffee history.
+For price / market rate / 100g questions, use CONTEXT.marketPricing (demo indicative rates for this batch). State the asOf date and that figures are demo batch-linked, not live exchange ticks. Prefer per-100g green and roasted figures when asked for 100g.
 If something is not in CONTEXT, say: "${REFUSAL}"
-Stay on Farm 147 / this batch. Keep answers concise with short paragraphs or simple hyphen bullets. English only. Do not invent other farms or market news.
+Stay on Farm 147 / this batch. Keep answers concise with short paragraphs or simple hyphen bullets. English only. Do not invent other farms or live market quotes outside CONTEXT.marketPricing.
 
 CONTEXT:
 ${JSON.stringify(passport, null, 2)}`;

@@ -286,6 +286,7 @@
     let buffer = "";
     let full = "";
 
+    let started = false;
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -303,6 +304,7 @@
           const delta = json.choices && json.choices[0] && json.choices[0].delta;
           const piece = delta && delta.content;
           if (piece) {
+            if (!started) started = true;
             full += piece;
             setBodyText(bodyEl, full);
             thread.scrollTop = thread.scrollHeight;
@@ -312,6 +314,7 @@
         }
       }
     }
+    bodyEl.classList.remove("is-streaming");
 
     if (!full.trim()) full = REFUSAL;
     if (guard && typeof guard.gateAnswer === "function") {
@@ -348,7 +351,8 @@
       }
     }
 
-    const bodyEl = addMessage("nivi", "Thinking…");
+    const bodyEl = addMessage("nivi", "…");
+    bodyEl.classList.add("is-streaming");
 
     try {
       const answer = await streamNvidia(q, bodyEl);

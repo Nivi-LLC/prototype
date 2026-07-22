@@ -4,7 +4,7 @@
     "I only have information for Farm 147 and this batch (CC-AR-2026-00481).";
 
   const ALLOW =
-    /\b(farm\s*147|batch|shipment|po-?2026|ship-?2026|cc-ar|crop|health|ndvi|heatmap|moisture|eudr|accept|reject|risk|lab|voyage|container|carbon|kodagu|surlabbi|somwarpet|continental|arabica|coffee|harvest|passport|quality|hamburg|certificate|ochratoxin|pesticide|weather|disease|canopy|polygon|gps|roasting|importer|verdict|eu\b|mrl|iot|seal|phytosanitary|coa|pallet|bag|truck|processing|warehouse|customs|twin|satellite|stress|dense|sparse|yield|elevation|soil|rainfall|block\s*a|history|historical|origin|journey|story|background|previous|past|memory|bean|cherry|grade|plantation|shade|farmer|ramesh|gowda|tell me|about this|this batch|this farm)\b/i;
+    /\b(farm\s*147|batch|shipment|po-?2026|ship-?2026|cc-ar|crop|health|ndvi|heatmap|moisture|eudr|accept|reject|risk|lab|voyage|container|carbon|kodagu|surlabbi|somwarpet|continental|arabica|coffee|harvest|passport|quality|hamburg|certificate|ochratoxin|pesticide|weather|disease|canopy|polygon|gps|roasting|importer|verdict|eu\b|mrl|iot|seal|phytosanitary|coa|pallet|bag|truck|processing|warehouse|customs|twin|satellite|stress|dense|sparse|yield|elevation|soil|rainfall|block\s*a|history|historical|origin|journey|story|background|previous|past|memory|bean|cherry|grade|plantation|shade|farmer|ramesh|gowda|tell me|about this|this batch|this farm|price|pricing|market|rate|cost|₹|inr|eur|euro|rupee|100\s*g|100g|gram|kg|fob|retail|premium)\b/i;
 
   const BLOCK = [
     /ignore\s+(all\s+)?(previous|prior|above|earlier)/i,

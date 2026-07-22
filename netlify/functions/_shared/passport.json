@@ -238,6 +238,88 @@
     ],
     "aiCheck": "Batch numbers, quantities, dates, and certificates match across all documents."
   },
+  "documents": [
+    {
+      "id": "doc-invoice",
+      "name": "Commercial Invoice · INV-CC-2026-0481.pdf",
+      "type": "PDF",
+      "category": "Trade",
+      "size": "248 KB",
+      "uploadedAt": "24 Jan 2026 · 09:12 IST",
+      "status": "Linked",
+      "source": "demo"
+    },
+    {
+      "id": "doc-packing",
+      "name": "Packing List · PL-CC-2026-0481.pdf",
+      "type": "PDF",
+      "category": "Trade",
+      "size": "186 KB",
+      "uploadedAt": "24 Jan 2026 · 09:14 IST",
+      "status": "Linked",
+      "source": "demo"
+    },
+    {
+      "id": "doc-bl",
+      "name": "Bill of Lading · MSCU8842191.pdf",
+      "type": "PDF",
+      "category": "Shipping",
+      "size": "312 KB",
+      "uploadedAt": "24 Jan 2026 · 11:55 IST",
+      "status": "Linked",
+      "source": "demo"
+    },
+    {
+      "id": "doc-coo",
+      "name": "Certificate of Origin · COO-IN-KA-2026-2201.pdf",
+      "type": "PDF",
+      "category": "Compliance",
+      "size": "420 KB",
+      "uploadedAt": "22 Jan 2026 · 16:40 IST",
+      "status": "Valid",
+      "source": "demo"
+    },
+    {
+      "id": "doc-phyto",
+      "name": "Phytosanitary · PHYTO-IN-2026-8841.pdf",
+      "type": "PDF",
+      "category": "Compliance",
+      "size": "390 KB",
+      "uploadedAt": "22 Jan 2026 · 16:42 IST",
+      "status": "Valid",
+      "source": "demo"
+    },
+    {
+      "id": "doc-coa",
+      "name": "Lab COA · COA-2026-1184.pdf",
+      "type": "PDF",
+      "category": "Lab",
+      "size": "275 KB",
+      "uploadedAt": "15 Jan 2026 · 13:08 IST",
+      "status": "Matched",
+      "source": "demo"
+    },
+    {
+      "id": "doc-eudr",
+      "name": "EUDR Parcel Twin · Farm147-BlockA.json",
+      "type": "JSON",
+      "category": "EUDR",
+      "size": "64 KB",
+      "uploadedAt": "10 Jan 2026 · 10:20 IST",
+      "status": "Verified",
+      "source": "demo"
+    },
+    {
+      "id": "doc-ndvi",
+      "name": "NDVI Heatmap Snapshot · 14-Jun-2026.png",
+      "type": "PNG",
+      "category": "Farm",
+      "size": "1.2 MB",
+      "uploadedAt": "14 Jun 2026 · 08:05 IST",
+      "status": "Linked",
+      "source": "demo"
+    }
+  ],
   "importerVerdict": {
     "shipmentMt": 200,
     "origin": "Kodagu · Farm 147",
@@ -257,6 +339,25 @@
     "complaints": "0.6%",
     "pricePremium": "4.8%",
     "recommendation": "Increase annual contract by 30%."
+  },
+  "marketPricing": {
+    "asOf": "21 Jul 2026",
+    "note": "Demo indicative rates for this Farm 147 / Plantation AA batch only — not live exchange quotes.",
+    "greenFobIndia": {
+      "perKgInr": 820,
+      "perKgEur": 9.1,
+      "per100gInr": 82,
+      "per100gEur": 0.91,
+      "label": "Green Arabica Plantation AA · FOB India (batch-linked)"
+    },
+    "roastedRetailEu": {
+      "perKgEur": 28.5,
+      "per100gEur": 2.85,
+      "per100gInr": 257,
+      "label": "Roasted retail equivalent · Hamburg specialty AA path (demo)"
+    },
+    "premiumVsRegional": "+4.8%",
+    "currencyNote": "INR ≈ ₹82 / €0.91 per 100g green; roasted retail demo ≈ €2.85 / ₹257 per 100g"
   },
   "riskFactors": {
     "cropHealth": {

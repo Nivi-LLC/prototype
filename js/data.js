@@ -270,6 +270,25 @@ window.PASSPORT = {
     pricePremium: "4.8%",
     recommendation: "Increase annual contract by 30%.",
   },
+  marketPricing: {
+    asOf: "21 Jul 2026",
+    note: "Demo indicative rates for this Farm 147 / Plantation AA batch only — not live exchange quotes.",
+    greenFobIndia: {
+      perKgInr: 820,
+      perKgEur: 9.1,
+      per100gInr: 82,
+      per100gEur: 0.91,
+      label: "Green Arabica Plantation AA · FOB India (batch-linked)",
+    },
+    roastedRetailEu: {
+      perKgEur: 28.5,
+      per100gEur: 2.85,
+      per100gInr: 257,
+      label: "Roasted retail equivalent · Hamburg specialty AA path (demo)",
+    },
+    premiumVsRegional: "+4.8%",
+    currencyNote: "INR ≈ ₹82 / €0.91 per 100g green; roasted retail demo ≈ €2.85 / ₹257 per 100g",
+  },
   riskFactors: {
     cropHealth: { value: "95%", level: "Low", note: "Dense canopy; localized NDVI stress <2% of Block A north edge" },
     ndviHeatmap: {

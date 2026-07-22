@@ -1,7 +1,5 @@
 import {
-  REFUSAL,
   buildSystemPrompt,
-  gateAnswer,
   gateQuestion,
   sanitizeHistory,
   sseText,
@@ -46,38 +44,6 @@ function sseResponse(req: Request, text: string, status = 200) {
   });
 }
 
-async function readUpstreamText(res: Response): Promise<string> {
-  if (!res.body) return "";
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let full = "";
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    const parts = buffer.split("\n");
-    buffer = parts.pop() || "";
-    for (const line of parts) {
-      const trimmed = line.trim();
-      if (!trimmed.startsWith("data:")) continue;
-      const payload = trimmed.slice(5).trim();
-      if (!payload || payload === "[DONE]") continue;
-      try {
-        const json = JSON.parse(payload);
-        const delta = json?.choices?.[0]?.delta?.content;
-        if (typeof delta === "string") full += delta;
-        const message = json?.choices?.[0]?.message?.content;
-        if (typeof message === "string") full += message;
-      } catch {
-        /* ignore partial */
-      }
-    }
-  }
-  return full;
-}
-
 export default async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: corsHeaders(req) });
@@ -95,7 +61,6 @@ export default async (req: Request) => {
   let payload: {
     question?: unknown;
     history?: unknown;
-    // legacy clients may still send messages — ignore system from client
     messages?: unknown;
   };
   try {
@@ -107,7 +72,6 @@ export default async (req: Request) => {
   let question = typeof payload.question === "string" ? payload.question.trim() : "";
   let history = sanitizeHistory(payload.history);
 
-  // Backward compatible: extract last user message if question omitted
   if (!question && Array.isArray(payload.messages)) {
     const users = payload.messages.filter(
       (m: { role?: string; content?: string }) => m && m.role === "user" && m.content
@@ -119,7 +83,6 @@ export default async (req: Request) => {
         (m: { role?: string }) => m && (m.role === "user" || m.role === "assistant")
       )
     );
-    // Drop the trailing user turn from history — it is the current question
     if (history.length && history[history.length - 1].role === "user") {
       history = history.slice(0, -1);
     }
@@ -134,7 +97,6 @@ export default async (req: Request) => {
     return sseResponse(req, gated.refusal);
   }
 
-  // Server owns system prompt + passport context. Client cannot override.
   const messages = [
     { role: "system", content: buildSystemPrompt() },
     ...history,
@@ -164,9 +126,15 @@ export default async (req: Request) => {
     });
   }
 
-  const raw = await readUpstreamText(upstream);
-  const safe = gateAnswer(raw || REFUSAL);
-  return sseResponse(req, safe);
+  // Pass-through stream so the UI can reveal tokens as they arrive
+  const headers = new Headers(corsHeaders(req));
+  headers.set("Content-Type", upstream.headers.get("Content-Type") || "text/event-stream; charset=utf-8");
+  headers.set("Cache-Control", "no-store");
+
+  return new Response(upstream.body, {
+    status: upstream.status,
+    headers,
+  });
 };
 
 export const config = {

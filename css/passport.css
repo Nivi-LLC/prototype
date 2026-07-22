@@ -1315,6 +1315,21 @@ a {
   margin-bottom: 0.3rem;
 }
 
+.ask-msg__body.is-streaming::after {
+  content: "▍";
+  display: inline-block;
+  margin-left: 2px;
+  animation: ask-caret 0.9s step-end infinite;
+  color: var(--green-deep);
+  font-weight: 700;
+}
+
+@keyframes ask-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
 .ask-msg__body p {
   margin: 0 0 0.45rem;
   font-size: 0.92rem;
