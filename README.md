@@ -22,9 +22,8 @@ Visit [http://localhost:8080](http://localhost:8080).
 ### Ask NIVI Intelligence
 
 1. Open the **Ask NIVI** tab.
-2. Paste a chat session key and click **Start 10 min** (auto-clears after 10 minutes).
-3. Optional: paste a voice (TTS) key and click **Start voice 10 min**, then use **Speak** on answers.
-4. Ask about Farm 147 only — crop health, NDVI/heatmap, moisture, lab/EU risk, voyage, EUDR, accept/reject.
+2. Paste a session key and click **Start 10 min** (auto-clears after 10 minutes).
+3. Ask about Farm 147 only — crop health, NDVI/heatmap, moisture, lab/EU risk, voyage, EUDR, accept/reject.
 
 Answers are scoped to the dummy passport in `js/data.js` (including `riskFactors`) via a strict farm-only system prompt.
 
