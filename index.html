@@ -685,52 +685,25 @@
           <section class="view" id="view-ask" data-title="Ask NIVI Intelligence">
             <p class="section-intro">
               Ask about this Continental Coffee batch — crop health, NDVI/heatmap, moisture, lab/EU risk, voyage, EUDR, and accept/reject.
-              Chat and voice sessions each last 10 minutes, then clear.
+              Each session lasts 10 minutes, then clears.
             </p>
 
             <div class="ask-key" id="ask-key-panel">
-              <div class="ask-key__block" id="ask-chat-block">
-                <div class="ask-key__row">
-                  <label class="ask-key__label" for="ask-api-key" id="ask-chat-label">Chat session key</label>
-                  <div class="ask-key__meta">
-                    <span class="ask-key__timer" id="ask-timer">No chat session</span>
-                    <button class="ask-key__clear-live" type="button" id="ask-key-clear-live">Clear</button>
-                  </div>
-                </div>
-                <div class="ask-key__row ask-key__controls" id="ask-chat-controls">
-                  <input
-                    class="ask-key__input"
-                    id="ask-api-key"
-                    type="password"
-                    autocomplete="off"
-                    spellcheck="false"
-                    placeholder="Paste chat session key"
-                  />
-                  <button class="ask-key__btn" type="button" id="ask-key-save">Start 10 min</button>
-                  <button class="ask-key__btn ask-key__btn--ghost" type="button" id="ask-key-clear">Clear</button>
-                </div>
+              <div class="ask-key__row">
+                <label class="ask-key__label" for="ask-api-key">Session key</label>
+                <span class="ask-key__timer" id="ask-timer">No active session</span>
               </div>
-
-              <div class="ask-key__block" id="ask-voice-block">
-                <div class="ask-key__row">
-                  <label class="ask-key__label" for="ask-voice-key" id="ask-voice-label">Voice session key</label>
-                  <div class="ask-key__meta">
-                    <span class="ask-key__timer" id="ask-voice-timer">No voice session</span>
-                    <button class="ask-key__clear-live" type="button" id="ask-voice-clear-live">Clear</button>
-                  </div>
-                </div>
-                <div class="ask-key__row ask-key__controls" id="ask-voice-controls">
-                  <input
-                    class="ask-key__input"
-                    id="ask-voice-key"
-                    type="password"
-                    autocomplete="off"
-                    spellcheck="false"
-                    placeholder="Paste voice session key"
-                  />
-                  <button class="ask-key__btn" type="button" id="ask-voice-save">Start voice 10 min</button>
-                  <button class="ask-key__btn ask-key__btn--ghost" type="button" id="ask-voice-clear">Clear</button>
-                </div>
+              <div class="ask-key__row ask-key__controls">
+                <input
+                  class="ask-key__input"
+                  id="ask-api-key"
+                  type="password"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="Paste session key"
+                />
+                <button class="ask-key__btn" type="button" id="ask-key-save">Start 10 min</button>
+                <button class="ask-key__btn ask-key__btn--ghost" type="button" id="ask-key-clear">Clear</button>
               </div>
             </div>
 
