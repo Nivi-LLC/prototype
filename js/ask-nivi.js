@@ -261,8 +261,94 @@
     }, 1000);
   }
 
+  function createSmoothReveal(bodyEl) {
+    let target = "";
+    let shown = "";
+    let raf = 0;
+    let lastTs = 0;
+    let streamDone = false;
+    let doneResolve = null;
+    const BASE_CPS = 64; // characters per second — smooth reading pace
+
+    function paint() {
+      setBodyText(bodyEl, shown || "…");
+      thread.scrollTop = thread.scrollHeight;
+    }
+
+    function step(ts) {
+      if (!lastTs) lastTs = ts;
+      const dt = Math.min(0.048, (ts - lastTs) / 1000);
+      lastTs = ts;
+
+      const backlog = target.length - shown.length;
+      if (backlog > 0) {
+        // Catch up gently if the model is ahead; stay smooth when close
+        const boost = backlog > 180 ? 2.4 : backlog > 80 ? 1.6 : backlog > 28 ? 1.2 : 1;
+        let n = Math.max(1, Math.round(BASE_CPS * boost * dt));
+        // Prefer ending on a word boundary for smoother feel
+        let next = Math.min(target.length, shown.length + n);
+        if (next < target.length) {
+          const slice = target.slice(shown.length, next + 12);
+          const space = slice.search(/[\s\n]/);
+          if (space > 0 && space <= 10) next = shown.length + space + 1;
+        }
+        shown = target.slice(0, next);
+        paint();
+      }
+
+      if (shown.length < target.length || !streamDone) {
+        raf = requestAnimationFrame(step);
+        return;
+      }
+
+      raf = 0;
+      bodyEl.classList.remove("is-streaming");
+      if (doneResolve) {
+        doneResolve(shown);
+        doneResolve = null;
+      }
+    }
+
+    function ensureLoop() {
+      if (!raf) {
+        lastTs = 0;
+        raf = requestAnimationFrame(step);
+      }
+    }
+
+    return {
+      push(chunk) {
+        if (!chunk) return;
+        target += chunk;
+        ensureLoop();
+      },
+      replace(text) {
+        target = String(text || "");
+        if (shown.length > target.length) shown = target;
+        ensureLoop();
+      },
+      finish() {
+        streamDone = true;
+        ensureLoop();
+        return new Promise((resolve) => {
+          if (!raf && shown.length >= target.length) {
+            bodyEl.classList.remove("is-streaming");
+            resolve(shown);
+            return;
+          }
+          doneResolve = resolve;
+        });
+      },
+      getTarget() {
+        return target;
+      },
+    };
+  }
+
   async function streamNvidia(question, bodyEl) {
     const apiKey = getKey();
+    const reveal = createSmoothReveal(bodyEl);
+
     // Client sends question + history only. Server locks system prompt + passport context.
     const res = await fetch(ASK_URL, {
       method: "POST",
@@ -284,9 +370,7 @@
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
-    let full = "";
 
-    let started = false;
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
@@ -303,24 +387,20 @@
           const json = JSON.parse(payload);
           const delta = json.choices && json.choices[0] && json.choices[0].delta;
           const piece = delta && delta.content;
-          if (piece) {
-            if (!started) started = true;
-            full += piece;
-            setBodyText(bodyEl, full);
-            thread.scrollTop = thread.scrollHeight;
-          }
+          if (piece) reveal.push(piece);
         } catch (e) {
           /* skip partial JSON */
         }
       }
     }
-    bodyEl.classList.remove("is-streaming");
 
+    let full = reveal.getTarget();
     if (!full.trim()) full = REFUSAL;
     if (guard && typeof guard.gateAnswer === "function") {
       full = guard.gateAnswer(full);
     }
-    setBodyText(bodyEl, full);
+    reveal.replace(full);
+    await reveal.finish();
     return full;
   }
 
