@@ -13,6 +13,10 @@ import * as protoLoader from "@grpc/proto-loader";
 
 const GRPC_HOST = "grpc.nvcf.nvidia.com:443";
 const SAMPLE_RATE_HZ = 22050;
+/** Magpie ensemble max sequence length is 400 chars. */
+const MAX_CHUNK_CHARS = 380;
+const MAX_TOTAL_CHARS = 1400;
+const MAX_CHUNKS = 4;
 
 // Magpie Multilingual (hosted) — Chatterbox function-id often returns NotFound for the account
 const DEFAULT_FUNCTION_ID = "877104f7-e885-42b9-8de8-f6e4c6303969";
@@ -159,6 +163,50 @@ function pcmToWav(pcm: Buffer, sampleRate: number, channels = 1, bitDepth = 16):
   return Buffer.concat([header, pcm]);
 }
 
+/** Split for Magpie's 400-char limit; prefer sentence / clause boundaries. */
+function chunkForTts(text: string): string[] {
+  const clean = text.replace(/\s+/g, " ").trim().slice(0, MAX_TOTAL_CHARS);
+  if (!clean) return [];
+  if (clean.length <= MAX_CHUNK_CHARS) return [clean];
+
+  const parts = clean.split(/(?<=[.!?…])\s+|(?<=[;:])\s+|\n+/);
+  const chunks: string[] = [];
+  let buf = "";
+
+  const pushBuf = () => {
+    const t = buf.trim();
+    if (t) chunks.push(t);
+    buf = "";
+  };
+
+  const flushOverflow = (piece: string) => {
+    let rest = piece.trim();
+    while (rest.length > MAX_CHUNK_CHARS) {
+      let cut = rest.lastIndexOf(" ", MAX_CHUNK_CHARS);
+      if (cut < MAX_CHUNK_CHARS * 0.5) cut = MAX_CHUNK_CHARS;
+      chunks.push(rest.slice(0, cut).trim());
+      rest = rest.slice(cut).trim();
+    }
+    buf = rest;
+  };
+
+  for (const part of parts) {
+    const next = part.trim();
+    if (!next) continue;
+    const candidate = buf ? `${buf} ${next}` : next;
+    if (candidate.length <= MAX_CHUNK_CHARS) {
+      buf = candidate;
+      continue;
+    }
+    pushBuf();
+    if (next.length <= MAX_CHUNK_CHARS) buf = next;
+    else flushOverflow(next);
+  }
+  pushBuf();
+
+  return chunks.slice(0, MAX_CHUNKS);
+}
+
 function synthesizeGrpc(authHeader: string, text: string): Promise<Buffer> {
   const client = getTtsClient();
   const metadata = new grpc.Metadata();
@@ -177,7 +225,7 @@ function synthesizeGrpc(authHeader: string, text: string): Promise<Buffer> {
     client.Synthesize(
       request,
       metadata,
-      { deadline: Date.now() + 25000 },
+      { deadline: Date.now() + 20000 },
       (err: Error | null, res: any) => {
         if (err) {
           reject(err);
@@ -192,6 +240,17 @@ function synthesizeGrpc(authHeader: string, text: string): Promise<Buffer> {
       }
     );
   });
+}
+
+async function synthesizeChunked(authHeader: string, text: string): Promise<Buffer> {
+  const chunks = chunkForTts(text);
+  if (!chunks.length) throw new Error("No speakable text");
+
+  const pcmParts: Buffer[] = [];
+  for (const chunk of chunks) {
+    pcmParts.push(await synthesizeGrpc(authHeader, chunk));
+  }
+  return Buffer.concat(pcmParts);
 }
 
 function friendlyError(err: any): string {
@@ -232,8 +291,7 @@ export default async (req: Request) => {
     }
     if (!text) return jsonResponse(req, 400, { error: "text required" });
 
-    const clipped = text.replace(/\s+/g, " ").slice(0, 900);
-    const pcm = await synthesizeGrpc(auth, clipped);
+    const pcm = await synthesizeChunked(auth, text);
     const wav = pcmToWav(pcm, SAMPLE_RATE_HZ);
 
     const headers = new Headers(corsHeaders(req));
