@@ -14,16 +14,15 @@
   const voiceTimerEl = document.getElementById("ask-voice-timer");
   if (!thread || !form || !input || !keyInput) return;
 
-  const proxyBase =
+  const onNetlifyHost =
     location.hostname.endsWith("netlify.app") ||
     location.hostname === "localhost" ||
-    location.hostname === "127.0.0.1"
-      ? ""
-      : "https://nivi-passports.netlify.app";
+    location.hostname === "127.0.0.1";
+  const PROXY_ORIGIN = onNetlifyHost ? "" : "https://nivi-passports.netlify.app";
 
   /* Same-origin on Netlify; GitHub Pages uses the Netlify proxy (CORS). */
-  const ASK_URL = window.NIVI_ASK_PROXY_URL || `${proxyBase}/api/ask` || "/api/ask";
-  const SPEAK_URL = window.NIVI_SPEAK_PROXY_URL || `${proxyBase}/api/speak` || "/api/speak";
+  const ASK_URL = window.NIVI_ASK_PROXY_URL || (PROXY_ORIGIN ? `${PROXY_ORIGIN}/api/ask` : "/api/ask");
+  const SPEAK_URL = window.NIVI_SPEAK_PROXY_URL || (PROXY_ORIGIN ? `${PROXY_ORIGIN}/api/speak` : "/api/speak");
   const SESSION_MS = 10 * 60 * 1000;
   const KEY_STORE = "nivi_nvidia_api_key";
   const EXP_STORE = "nivi_nvidia_session_expires";
@@ -405,6 +404,8 @@
     try {
       const res = await fetch(SPEAK_URL, {
         method: "POST",
+        mode: "cors",
+        credentials: "omit",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${getVoiceKey()}`,
@@ -412,12 +413,37 @@
         body: JSON.stringify({ text: clean }),
       });
 
+      const contentType = res.headers.get("Content-Type") || "";
       if (!res.ok) {
-        const errText = await res.text().catch(() => "");
-        throw new Error(`Voice request failed (${res.status}): ${errText.slice(0, 180) || res.statusText}`);
+        let detail = res.statusText;
+        try {
+          if (contentType.includes("application/json")) {
+            const j = await res.json();
+            detail = j.error || JSON.stringify(j).slice(0, 180);
+          } else {
+            detail = (await res.text()).slice(0, 180) || detail;
+          }
+        } catch (e) {}
+        throw new Error(`Voice request failed (${res.status}): ${detail}`);
       }
 
-      const blob = await res.blob();
+      const bytes = await res.arrayBuffer();
+      if (!bytes.byteLength) throw new Error("Empty audio from voice service");
+
+      // LINEAR_PCM from Riva may arrive as raw PCM — wrap as WAV if no RIFF header
+      let playBytes = bytes;
+      const view = new Uint8Array(bytes);
+      const isRiff =
+        view.length >= 4 &&
+        view[0] === 0x52 &&
+        view[1] === 0x49 &&
+        view[2] === 0x46 &&
+        view[3] === 0x46;
+      if (!isRiff) {
+        playBytes = pcmToWav(view, 44100, 1, 16);
+      }
+
+      const blob = new Blob([playBytes], { type: "audio/wav" });
       const url = URL.createObjectURL(blob);
       const audio = new Audio(url);
       currentAudio = audio;
@@ -435,18 +461,50 @@
           btn.disabled = false;
           btn.textContent = "Speak";
         }
+        addMessage("nivi", "Could not play the generated audio in this browser.");
       });
       await audio.play();
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Speak";
+      }
     } catch (err) {
       if (btn) {
         btn.disabled = false;
         btn.textContent = "Speak";
       }
+      const msg = err && err.message ? err.message : String(err);
       addMessage(
         "nivi",
-        `Could not speak this answer.\n${err && err.message ? err.message : String(err)}`
+        `Could not speak this answer.\n${msg}\n\nCheck the voice session key and try Start voice 10 min again.`
       );
     }
+  }
+
+  function pcmToWav(pcm, sampleRate, channels, bitDepth) {
+    const blockAlign = (channels * bitDepth) / 8;
+    const byteRate = sampleRate * blockAlign;
+    const dataSize = pcm.byteLength;
+    const buffer = new ArrayBuffer(44 + dataSize);
+    const out = new DataView(buffer);
+    const writeStr = (offset, str) => {
+      for (let i = 0; i < str.length; i += 1) out.setUint8(offset + i, str.charCodeAt(i));
+    };
+    writeStr(0, "RIFF");
+    out.setUint32(4, 36 + dataSize, true);
+    writeStr(8, "WAVE");
+    writeStr(12, "fmt ");
+    out.setUint32(16, 16, true);
+    out.setUint16(20, 1, true);
+    out.setUint16(22, channels, true);
+    out.setUint32(24, sampleRate, true);
+    out.setUint32(28, byteRate, true);
+    out.setUint16(32, blockAlign, true);
+    out.setUint16(34, bitDepth, true);
+    writeStr(36, "data");
+    out.setUint32(40, dataSize, true);
+    new Uint8Array(buffer, 44).set(pcm);
+    return buffer;
   }
 
   function createSmoothReveal(bodyEl) {

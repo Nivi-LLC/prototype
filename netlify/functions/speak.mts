@@ -28,65 +28,95 @@ function jsonResponse(req: Request, status: number, body: unknown) {
   });
 }
 
+function buildMultipart(fields: Record<string, string>): { body: Uint8Array; contentType: string } {
+  const boundary = `----niviSpeak${Date.now().toString(16)}`;
+  const chunks: string[] = [];
+  for (const [name, value] of Object.entries(fields)) {
+    chunks.push(`--${boundary}\r\n`);
+    chunks.push(`Content-Disposition: form-data; name="${name}"\r\n\r\n`);
+    chunks.push(`${value}\r\n`);
+  }
+  chunks.push(`--${boundary}--\r\n`);
+  const body = new TextEncoder().encode(chunks.join(""));
+  return {
+    body,
+    contentType: `multipart/form-data; boundary=${boundary}`,
+  };
+}
+
 export default async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: corsHeaders(req) });
-  }
-
-  if (req.method !== "POST") {
-    return jsonResponse(req, 405, { error: "Method not allowed" });
-  }
-
-  const auth = req.headers.get("Authorization") || "";
-  if (!auth.startsWith("Bearer ") || auth.length < 20) {
-    return jsonResponse(req, 401, { error: "Missing voice session key" });
-  }
-
-  let text = "";
   try {
-    const payload = await req.json();
-    text = String(payload?.text || "").trim();
-  } catch {
-    return jsonResponse(req, 400, { error: "Invalid JSON body" });
-  }
+    if (req.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: corsHeaders(req) });
+    }
 
-  if (!text) {
-    return jsonResponse(req, 400, { error: "text required" });
-  }
+    if (req.method !== "POST") {
+      return jsonResponse(req, 405, { error: "Method not allowed" });
+    }
 
-  // Keep TTS payloads short for demo latency
-  const clipped = text.replace(/\s+/g, " ").slice(0, 1600);
+    const auth = req.headers.get("Authorization") || "";
+    if (!auth.startsWith("Bearer ") || auth.length < 20) {
+      return jsonResponse(req, 401, { error: "Missing voice session key" });
+    }
 
-  const form = new FormData();
-  form.append("text", clipped);
-  form.append("language", LANGUAGE);
-  form.append("voice", VOICE);
-  form.append("encoding", "LINEAR_PCM");
-  form.append("sample_rate_hz", "44100");
+    let text = "";
+    try {
+      const payload = await req.json();
+      text = String(payload?.text || "").trim();
+    } catch {
+      return jsonResponse(req, 400, { error: "Invalid JSON body" });
+    }
 
-  const upstream = await fetch(RIVA_URL, {
-    method: "POST",
-    headers: {
-      Authorization: auth,
-    },
-    body: form,
-  });
+    if (!text) {
+      return jsonResponse(req, 400, { error: "text required" });
+    }
 
-  if (!upstream.ok) {
-    const errText = await upstream.text().catch(() => "");
-    return jsonResponse(req, upstream.status, {
-      error: errText.slice(0, 240) || upstream.statusText,
+    const clipped = text.replace(/\s+/g, " ").slice(0, 1200);
+    const multipart = buildMultipart({
+      text: clipped,
+      language: LANGUAGE,
+      voice: VOICE,
+      encoding: "LINEAR_PCM",
+      sample_rate_hz: "44100",
+    });
+
+    const upstream = await fetch(RIVA_URL, {
+      method: "POST",
+      headers: {
+        Authorization: auth,
+        "Content-Type": multipart.contentType,
+        Accept: "audio/*, application/octet-stream",
+      },
+      body: multipart.body,
+    });
+
+    const audioBytes = await upstream.arrayBuffer();
+
+    if (!upstream.ok) {
+      const errText = new TextDecoder().decode(audioBytes).slice(0, 240);
+      return jsonResponse(req, upstream.status, {
+        error: errText || upstream.statusText || "TTS upstream error",
+      });
+    }
+
+    if (!audioBytes.byteLength) {
+      return jsonResponse(req, 502, { error: "Empty audio response from TTS" });
+    }
+
+    const headers = new Headers(corsHeaders(req));
+    headers.set("Content-Type", upstream.headers.get("Content-Type") || "audio/wav");
+    headers.set("Cache-Control", "no-store");
+    headers.set("Access-Control-Expose-Headers", "Content-Type");
+
+    return new Response(audioBytes, {
+      status: 200,
+      headers,
+    });
+  } catch (err) {
+    return jsonResponse(req, 500, {
+      error: err instanceof Error ? err.message : "Speak proxy failed",
     });
   }
-
-  const headers = new Headers(corsHeaders(req));
-  headers.set("Content-Type", upstream.headers.get("Content-Type") || "audio/wav");
-  headers.set("Cache-Control", "no-store");
-
-  return new Response(upstream.body, {
-    status: upstream.status,
-    headers,
-  });
 };
 
 export const config = {
