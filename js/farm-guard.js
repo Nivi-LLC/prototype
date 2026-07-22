@@ -6,6 +6,9 @@
   const ALLOW =
     /\b(farm\s*147|batch|shipment|po-?2026|ship-?2026|cc-ar|crop|health|ndvi|heatmap|moisture|eudr|accept|reject|risk|lab|voyage|container|carbon|kodagu|surlabbi|somwarpet|continental|arabica|coffee|harvest|passport|quality|hamburg|certificate|ochratoxin|pesticide|weather|disease|canopy|polygon|gps|roasting|importer|verdict|eu\b|mrl|iot|seal|phytosanitary|coa|pallet|bag|truck|processing|warehouse|customs|twin|satellite|stress|dense|sparse|yield|elevation|soil|rainfall|block\s*a|history|historical|origin|journey|story|background|previous|past|memory|bean|cherry|grade|plantation|shade|farmer|ramesh|gowda|tell me|about this|this batch|this farm|price|pricing|market|rate|cost|₹|inr|eur|euro|rupee|100\s*g|100g|gram|kg|fob|retail|premium)\b/i;
 
+  const FOLLOWUP =
+    /^(why|how|what about|and\b|also\b|more\b|explain|details?|yes|no|ok|please|continue|go on|tell me more|same|that|those|it)\b/i;
+
   const BLOCK = [
     /ignore\s+(all\s+)?(previous|prior|above|earlier)/i,
     /disregard\s+(all\s+)?(previous|prior|above|instructions|rules)/i,
@@ -17,9 +20,11 @@
     /new\s+instructions\s*:/i,
     /\bfarm\s*(?!147\b)\d+\b/i,
     /\b(brazil|colombia|ethiopia|vietnam|guatemala|honduras|peru|mexico|uganda)\b/i,
-    /\b(write|generate|run)\s+(some\s+)?(code|python|javascript|typescript|sql)\b/i,
+    /\b(code|python|javascript|typescript|sql|script|program|function|hello\s*world)\b/i,
+    /\b(write|generate|run|create|show|give)\b.{0,40}\b(code|script|program|function|snippet)\b/i,
     /\b(bitcoin|ethereum|stock\s+tip|who\s+is\s+the\s+president|recipe\s+for)\b/i,
     /\b(other\s+farms?|another\s+farm|different\s+farm)\b/i,
+    /\b(kansas|overland\s*park|tourism|things\s+to\s+do|vacation|hotel|restaurant)\b/i,
   ];
 
   function gateQuestion(question, hasHistory) {
@@ -30,20 +35,30 @@
       if (BLOCK[i].test(q)) return { ok: false, refusal: REFUSAL };
     }
     if (ALLOW.test(q)) return { ok: true, refusal: REFUSAL };
-    if (hasHistory && q.length <= 80 && !/[`{}<>]/.test(q)) return { ok: true, refusal: REFUSAL };
+    if (hasHistory && q.length <= 60 && FOLLOWUP.test(q) && !/[`{}<>]/.test(q)) {
+      return { ok: true, refusal: REFUSAL };
+    }
     return { ok: false, refusal: REFUSAL };
   }
 
   function gateAnswer(answer) {
     const text = String(answer || "").trim();
     if (!text) return REFUSAL;
-    if (text.includes("I only have information for Farm 147")) return text;
+    if (text.includes("I only have information for Farm 147")) return REFUSAL;
+
+    const hasCode =
+      /```/.test(text) ||
+      /\b(import\s+\w+|def\s+\w+\s*\(|print\s*\(|console\.log|function\s+\w+\s*\()/i.test(text);
+    const offTopic =
+      /\b(kansas|overland\s*park|hello\s*,?\s*world|tourism|vacation|hotel)\b/i.test(text);
     const offOrigin =
       /\b(brazil|colombia|ethiopia|vietnam|guatemala|honduras)\b/i.test(text) &&
       !/\bfarm\s*147\b/i.test(text);
     const leak = /system prompt|as a large language model|ignore my previous/i.test(text);
     const otherFarm = /\bfarm\s*(?!147\b)\d+\b/i.test(text);
-    if (offOrigin || leak || otherFarm) return REFUSAL;
+
+    if (hasCode || offTopic || offOrigin || leak || otherFarm) return REFUSAL;
+    if (text.length > 80 && !ALLOW.test(text)) return REFUSAL;
     return text;
   }
 
