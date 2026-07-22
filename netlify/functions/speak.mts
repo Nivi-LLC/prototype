@@ -13,10 +13,14 @@ import * as protoLoader from "@grpc/proto-loader";
 
 const GRPC_HOST = "grpc.nvcf.nvidia.com:443";
 const SAMPLE_RATE_HZ = 22050;
-/** Magpie ensemble max sequence length is 400 chars. */
-const MAX_CHUNK_CHARS = 380;
-const MAX_TOTAL_CHARS = 1400;
-const MAX_CHUNKS = 4;
+/**
+ * Magpie max sequence is 400 chars; NVCF often needs ~10–20s per call.
+ * Netlify sync functions cap at ~26s — speak one short opening only.
+ */
+const MAX_CHUNK_CHARS = 280;
+const MAX_TOTAL_CHARS = 280;
+const MAX_CHUNKS = 1;
+const GRPC_DEADLINE_MS = 24000;
 
 // Magpie Multilingual (hosted) — Chatterbox function-id often returns NotFound for the account
 const DEFAULT_FUNCTION_ID = "877104f7-e885-42b9-8de8-f6e4c6303969";
@@ -225,7 +229,7 @@ function synthesizeGrpc(authHeader: string, text: string): Promise<Buffer> {
     client.Synthesize(
       request,
       metadata,
-      { deadline: Date.now() + 20000 },
+      { deadline: Date.now() + GRPC_DEADLINE_MS },
       (err: Error | null, res: any) => {
         if (err) {
           reject(err);
@@ -245,12 +249,8 @@ function synthesizeGrpc(authHeader: string, text: string): Promise<Buffer> {
 async function synthesizeChunked(authHeader: string, text: string): Promise<Buffer> {
   const chunks = chunkForTts(text);
   if (!chunks.length) throw new Error("No speakable text");
-
-  const pcmParts: Buffer[] = [];
-  for (const chunk of chunks) {
-    pcmParts.push(await synthesizeGrpc(authHeader, chunk));
-  }
-  return Buffer.concat(pcmParts);
+  // One chunk only — stays inside Netlify’s ~26s function budget
+  return synthesizeGrpc(authHeader, chunks[0]);
 }
 
 function friendlyError(err: any): string {
@@ -263,7 +263,10 @@ function friendlyError(err: any): string {
     );
   }
   if (/Unauthenticated|Authentication failed/i.test(detail) || err?.code === grpc.status.UNAUTHENTICATED) {
-    return "Voice key rejected by NVIDIA. Paste a valid NVIDIA API key and click Start voice 10 min again.";
+    return "Voice key rejected. Paste a valid session key and click Start voice 10 min again.";
+  }
+  if (/Deadline exceeded/i.test(detail) || err?.code === grpc.status.DEADLINE_EXCEEDED) {
+    return "Voice timed out (TTS is slow right now). Try Speak again — the first retry is usually faster.";
   }
   return detail.slice(0, 320);
 }
