@@ -121,9 +121,18 @@ export default async (req: Request) => {
 
   if (!upstream.ok) {
     const errText = await upstream.text().catch(() => "");
-    return jsonResponse(req, upstream.status, {
-      error: errText.slice(0, 240) || upstream.statusText,
-    });
+    let message = errText.slice(0, 280) || upstream.statusText;
+    try {
+      const parsed = JSON.parse(errText);
+      message = parsed.detail || parsed.title || parsed.error || message;
+    } catch {
+      /* keep raw */
+    }
+    if (upstream.status === 403) {
+      message =
+        "Authorization failed for this chat key. Create a new key via Get API Key on the chat model at build.nvidia.com (Public API Endpoints), then start a new chat session.";
+    }
+    return jsonResponse(req, upstream.status, { error: message });
   }
 
   // Pass-through stream so the UI can reveal tokens as they arrive

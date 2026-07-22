@@ -217,8 +217,15 @@
     if (!silent) addMessage("nivi", "Chat session cleared. Paste a key and click Start 10 min to continue.");
   }
 
+  function normalizeSessionKey(key) {
+    let k = String(key || "").trim();
+    if (/^bearer\s+/i.test(k)) k = k.replace(/^bearer\s+/i, "").trim();
+    k = k.replace(/^["']+|["']+$/g, "").trim();
+    return k;
+  }
+
   function startSession(key) {
-    const trimmed = (key || "").trim();
+    const trimmed = normalizeSessionKey(key);
     if (!trimmed) {
       addMessage("nivi", "Paste a chat session key first, then click Start 10 min.");
       return;
@@ -275,7 +282,7 @@
   }
 
   function startVoiceSession(key) {
-    const trimmed = (key || "").trim();
+    const trimmed = normalizeSessionKey(key);
     if (!trimmed) {
       addMessage("nivi", "Paste a voice session key first, then click Start voice 10 min.");
       return;
@@ -654,7 +661,22 @@
 
     if (!res.ok) {
       const errText = await res.text().catch(() => "");
-      throw new Error(`Request failed (${res.status}): ${errText.slice(0, 240) || res.statusText}`);
+      let detail = errText.slice(0, 280) || res.statusText;
+      try {
+        const j = JSON.parse(errText);
+        detail = j.error || detail;
+        if (typeof detail === "string" && detail.trim().startsWith("{")) {
+          const inner = JSON.parse(detail);
+          detail = inner.detail || inner.title || detail;
+        }
+      } catch (e) {}
+      if (res.status === 403 || /Authorization failed|Forbidden/i.test(String(detail))) {
+        clearSession(true);
+        throw new Error(
+          "Chat key was rejected (403). Paste a fresh chat session key from build.nvidia.com (Get API Key on the chat model), then Start 10 min again. Voice keys do not always work for chat."
+        );
+      }
+      throw new Error(`Request failed (${res.status}): ${String(detail).slice(0, 240)}`);
     }
 
     const reader = res.body.getReader();
