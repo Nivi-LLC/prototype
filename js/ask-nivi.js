@@ -12,6 +12,10 @@
   const voiceSave = document.getElementById("ask-voice-save");
   const voiceClear = document.getElementById("ask-voice-clear");
   const voiceTimerEl = document.getElementById("ask-voice-timer");
+  const chatBlock = document.getElementById("ask-chat-block");
+  const voiceBlock = document.getElementById("ask-voice-block");
+  const chatLabel = document.getElementById("ask-chat-label");
+  const voiceLabel = document.getElementById("ask-voice-label");
   if (!thread || !form || !input || !keyInput) return;
 
   const onNetlifyHost =
@@ -291,6 +295,17 @@
     );
   }
 
+  function updateKeyPanelVisibility() {
+    const chatOn = sessionActive();
+    const voiceOn = voiceSessionActive();
+
+    if (chatBlock) chatBlock.classList.toggle("is-active", chatOn);
+    if (voiceBlock) voiceBlock.classList.toggle("is-active", voiceOn);
+
+    if (chatLabel) chatLabel.textContent = chatOn ? "Chat" : "Chat session key";
+    if (voiceLabel) voiceLabel.textContent = voiceOn ? "Voice" : "Voice session key";
+  }
+
   function updateTimerUI() {
     if (tickTimer) {
       clearInterval(tickTimer);
@@ -306,22 +321,28 @@
             sessionStorage.removeItem(EXP_STORE);
           } catch (e) {}
         }
+        updateKeyPanelVisibility();
         return false;
       }
       const left = Math.max(0, getExpiry() - Date.now());
       const m = Math.floor(left / 60000);
       const s = Math.floor((left % 60000) / 1000);
-      timerEl.textContent = `Chat ${m}:${String(s).padStart(2, "0")} left`;
+      timerEl.textContent = `${m}:${String(s).padStart(2, "0")} left`;
       timerEl.classList.add("is-live");
       timerEl.classList.toggle("is-warn", left < 60000);
+      updateKeyPanelVisibility();
       return true;
     };
 
-    if (!paint()) return;
+    if (!paint()) {
+      updateKeyPanelVisibility();
+      return;
+    }
     tickTimer = setInterval(() => {
       if (!paint()) {
         clearInterval(tickTimer);
         tickTimer = null;
+        updateKeyPanelVisibility();
         addMessage("nivi", "10-minute chat session ended. Paste a key again to continue.");
       }
     }, 1000);
@@ -343,31 +364,52 @@
             sessionStorage.removeItem(VOICE_EXP_STORE);
           } catch (e) {}
         }
+        updateKeyPanelVisibility();
         return false;
       }
       const left = Math.max(0, getVoiceExpiry() - Date.now());
       const m = Math.floor(left / 60000);
       const s = Math.floor((left % 60000) / 1000);
-      voiceTimerEl.textContent = `Voice ${m}:${String(s).padStart(2, "0")} left`;
+      voiceTimerEl.textContent = `${m}:${String(s).padStart(2, "0")} left`;
       voiceTimerEl.classList.add("is-live");
       voiceTimerEl.classList.toggle("is-warn", left < 60000);
+      updateKeyPanelVisibility();
       return true;
     };
 
-    if (!paint()) return;
+    if (!paint()) {
+      updateKeyPanelVisibility();
+      return;
+    }
     voiceTickTimer = setInterval(() => {
       if (!paint()) {
         clearInterval(voiceTickTimer);
         voiceTickTimer = null;
+        updateKeyPanelVisibility();
         addMessage("nivi", "10-minute voice session ended. Paste a voice key again to speak.");
       }
     }, 1000);
   }
 
-  function plainTextFromBody(bodyEl) {
-    return String(bodyEl?.innerText || bodyEl?.textContent || "")
+  /** Strip markdown so TTS does not say "asterisk". */
+  function plainTextForSpeech(text) {
+    return String(text || "")
+      .replace(/\*\*([^*]+)\*\*/g, "$1")
+      .replace(/__([^_]+)__/g, "$1")
+      .replace(/(^|\W)\*([^*\n]+)\*(?=\W|$)/g, "$1$2")
+      .replace(/(^|\W)_([^_\n]+)_(?=\W|$)/g, "$1$2")
+      .replace(/`([^`]+)`/g, "$1")
+      .replace(/^#{1,6}\s+/gm, "")
+      .replace(/^\s*[-*•]\s+/gm, "")
+      .replace(/\|/g, " ")
+      .replace(/\*/g, "")
+      .replace(/[_#~]/g, " ")
       .replace(/\s+/g, " ")
       .trim();
+  }
+
+  function plainTextFromBody(bodyEl) {
+    return plainTextForSpeech(bodyEl?.innerText || bodyEl?.textContent || "");
   }
 
   function attachSpeakButton(bodyEl, text) {
@@ -377,13 +419,15 @@
     const btn = el("button", "ask-speak", "Speak");
     btn.type = "button";
     btn.title = "Speak this answer aloud";
-    btn.addEventListener("click", () => speakText(text || plainTextFromBody(bodyEl), btn));
+    btn.addEventListener("click", () =>
+      speakText(plainTextForSpeech(text || plainTextFromBody(bodyEl)), btn)
+    );
     actions.appendChild(btn);
     bubble.appendChild(actions);
   }
 
   async function speakText(text, btn) {
-    const clean = String(text || "").trim();
+    const clean = plainTextForSpeech(text);
     if (!clean) return;
 
     if (!voiceSessionActive()) {

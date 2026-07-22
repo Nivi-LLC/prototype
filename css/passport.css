@@ -1202,6 +1202,21 @@ a {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 0.9rem 1rem;
+}
+
+.ask-key__block + .ask-key__block {
+  margin-top: 0.85rem;
+}
+
+.ask-key__block.is-active .ask-key__controls {
+  display: none;
+}
+
+.ask-key__block.is-active .ask-key__label {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 700;
+}
   margin-bottom: 12px;
 }
 

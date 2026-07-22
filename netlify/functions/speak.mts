@@ -246,8 +246,24 @@ function synthesizeGrpc(authHeader: string, text: string): Promise<Buffer> {
   });
 }
 
+function stripMarkupForSpeech(text: string): string {
+  return String(text || "")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/__([^_]+)__/g, "$1")
+    .replace(/(^|\W)\*([^*\n]+)\*(?=\W|$)/g, "$1$2")
+    .replace(/(^|\W)_([^_\n]+)_(?=\W|$)/g, "$1$2")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^\s*[-*•]\s+/gm, "")
+    .replace(/\|/g, " ")
+    .replace(/\*/g, "")
+    .replace(/[_#~]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 async function synthesizeChunked(authHeader: string, text: string): Promise<Buffer> {
-  const chunks = chunkForTts(text);
+  const chunks = chunkForTts(stripMarkupForSpeech(text));
   if (!chunks.length) throw new Error("No speakable text");
   // One chunk only — stays inside Netlify’s ~26s function budget
   return synthesizeGrpc(authHeader, chunks[0]);
