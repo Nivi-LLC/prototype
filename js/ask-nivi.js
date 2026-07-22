@@ -440,7 +440,7 @@
         view[2] === 0x46 &&
         view[3] === 0x46;
       if (!isRiff) {
-        playBytes = pcmToWav(view, 44100, 1, 16);
+        playBytes = pcmToWav(view, 22050, 1, 16);
       }
 
       const blob = new Blob([playBytes], { type: "audio/wav" });
