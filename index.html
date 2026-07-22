@@ -685,13 +685,13 @@
           <section class="view" id="view-ask" data-title="Ask NIVI Intelligence">
             <p class="section-intro">
               Ask about this Continental Coffee batch — crop health, NDVI/heatmap, moisture, lab/EU risk, voyage, EUDR, and accept/reject.
-              Each session lasts 10 minutes, then clears.
+              Chat and voice sessions each last 10 minutes, then clear.
             </p>
 
             <div class="ask-key" id="ask-key-panel">
               <div class="ask-key__row">
-                <label class="ask-key__label" for="ask-api-key">Session key</label>
-                <span class="ask-key__timer" id="ask-timer">No active session</span>
+                <label class="ask-key__label" for="ask-api-key">Chat session key</label>
+                <span class="ask-key__timer" id="ask-timer">No chat session</span>
               </div>
               <div class="ask-key__row ask-key__controls">
                 <input
@@ -700,10 +700,27 @@
                   type="password"
                   autocomplete="off"
                   spellcheck="false"
-                  placeholder="Paste session key"
+                  placeholder="Paste chat session key"
                 />
                 <button class="ask-key__btn" type="button" id="ask-key-save">Start 10 min</button>
                 <button class="ask-key__btn ask-key__btn--ghost" type="button" id="ask-key-clear">Clear</button>
+              </div>
+
+              <div class="ask-key__row" style="margin-top:0.85rem">
+                <label class="ask-key__label" for="ask-voice-key">Voice session key</label>
+                <span class="ask-key__timer" id="ask-voice-timer">No voice session</span>
+              </div>
+              <div class="ask-key__row ask-key__controls">
+                <input
+                  class="ask-key__input"
+                  id="ask-voice-key"
+                  type="password"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="Paste NVIDIA voice key (Chatterbox TTS)"
+                />
+                <button class="ask-key__btn" type="button" id="ask-voice-save">Start voice 10 min</button>
+                <button class="ask-key__btn ask-key__btn--ghost" type="button" id="ask-voice-clear">Clear</button>
               </div>
             </div>
 
