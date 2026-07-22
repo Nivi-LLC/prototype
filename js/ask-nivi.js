@@ -675,7 +675,7 @@
       if (res.status === 403 || /Authorization failed|Forbidden/i.test(String(detail))) {
         clearSession(true);
         throw new Error(
-          "Chat key was rejected (403). Paste a fresh chat session key from build.nvidia.com (Get API Key on the chat model), then Start 10 min again. Voice keys do not always work for chat."
+          "Chat key was rejected (403). Clear chat, then paste a new key from build.nvidia.com → open a chat model (e.g. Llama) → Get API Key. TTS/voice keys often cannot call chat."
         );
       }
       throw new Error(`Request failed (${res.status}): ${String(detail).slice(0, 240)}`);

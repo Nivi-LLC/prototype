@@ -6,7 +6,12 @@ import {
 } from "./_shared/guardrails.mts";
 
 const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
-const MODEL = "z-ai/glm-5.2";
+/** Prefer GLM; fall back to lighter hosted models when the key is not entitled for GLM. */
+const PRIMARY_MODEL = (typeof process !== "undefined" && process.env?.CHAT_MODEL) || "z-ai/glm-5.2";
+const FALLBACK_MODELS = [
+  "meta/llama-3.1-8b-instruct",
+  "nvidia/llama-3.1-nemotron-nano-8b-v1",
+];
 
 function corsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get("Origin") || "";
@@ -44,6 +49,36 @@ function sseResponse(req: Request, text: string, status = 200) {
   });
 }
 
+function normalizeAuth(header: string): string {
+  let token = header.trim();
+  if (/^bearer\s+/i.test(token)) token = token.replace(/^bearer\s+/i, "").trim();
+  token = token.replace(/^["']+|["']+$/g, "").trim();
+  return token ? `Bearer ${token}` : "";
+}
+
+async function callChat(
+  auth: string,
+  model: string,
+  messages: { role: string; content: string }[]
+): Promise<Response> {
+  return fetch(NVIDIA_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+      Authorization: auth,
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      temperature: 0.2,
+      top_p: 0.9,
+      max_tokens: 2048,
+      stream: true,
+    }),
+  });
+}
+
 export default async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: corsHeaders(req) });
@@ -53,7 +88,7 @@ export default async (req: Request) => {
     return jsonResponse(req, 405, { error: "Method not allowed" });
   }
 
-  const auth = req.headers.get("Authorization") || "";
+  const auth = normalizeAuth(req.headers.get("Authorization") || "");
   if (!auth.startsWith("Bearer ") || auth.length < 20) {
     return jsonResponse(req, 401, { error: "Missing session key" });
   }
@@ -103,39 +138,42 @@ export default async (req: Request) => {
     { role: "user", content: question },
   ];
 
-  const upstream = await fetch(NVIDIA_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: auth,
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      messages,
-      temperature: 0.2,
-      top_p: 0.9,
-      max_tokens: 2048,
-      stream: true,
-    }),
-  });
+  const models = [PRIMARY_MODEL, ...FALLBACK_MODELS.filter((m) => m !== PRIMARY_MODEL)];
+  let upstream: Response | null = null;
+  let lastErr = "";
 
-  if (!upstream.ok) {
-    const errText = await upstream.text().catch(() => "");
-    let message = errText.slice(0, 280) || upstream.statusText;
-    try {
-      const parsed = JSON.parse(errText);
-      message = parsed.detail || parsed.title || parsed.error || message;
-    } catch {
-      /* keep raw */
+  for (const model of models) {
+    const res = await callChat(auth, model, messages);
+    if (res.ok) {
+      upstream = res;
+      break;
     }
-    if (upstream.status === 403) {
-      message =
-        "Authorization failed for this chat key. Create a new key via Get API Key on the chat model at build.nvidia.com (Public API Endpoints), then start a new chat session.";
+    lastErr = await res.text().catch(() => res.statusText);
+    // Only cascade on auth/entitlement failures; other errors stop immediately
+    if (res.status !== 403 && res.status !== 404) {
+      upstream = res;
+      break;
     }
-    return jsonResponse(req, upstream.status, { error: message });
   }
 
-  // Pass-through stream so the UI can reveal tokens as they arrive
+  if (!upstream || !upstream.ok) {
+    let message = lastErr.slice(0, 280) || "Chat upstream error";
+    try {
+      const parsed = JSON.parse(lastErr);
+      message = parsed.detail || parsed.title || parsed.error || message;
+    } catch {
+      /* keep */
+    }
+    const status = upstream?.status || 403;
+    if (status === 403) {
+      message =
+        "Chat authorization failed for this key on all tried models. " +
+        "On build.nvidia.com open any chat model → Get API Key (enable Public API Endpoints), " +
+        "then Clear the chat session and paste that new key.";
+    }
+    return jsonResponse(req, status, { error: message });
+  }
+
   const headers = new Headers(corsHeaders(req));
   headers.set("Content-Type", upstream.headers.get("Content-Type") || "text/event-stream; charset=utf-8");
   headers.set("Cache-Control", "no-store");
