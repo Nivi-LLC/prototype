@@ -363,8 +363,16 @@
     });
 
     if (!res.ok) {
-      const errText = await res.text().catch(() => "");
-      throw new Error(`Request failed (${res.status}): ${errText.slice(0, 240) || res.statusText}`);
+      let detail = "Check your session key and try again.";
+      try {
+        const j = JSON.parse(await res.text());
+        if (j && typeof j.error === "string" && j.error.trim()) detail = j.error.trim();
+      } catch (e) {}
+      if (res.status === 401 || res.status === 403) {
+        clearSession(true);
+        throw new Error(detail || "Session key was rejected. Paste a valid key and Start 10 min again.");
+      }
+      throw new Error(detail);
     }
 
     const reader = res.body.getReader();

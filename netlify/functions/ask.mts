@@ -5,13 +5,9 @@ import {
   sseText,
 } from "./_shared/guardrails.mts";
 
-const NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
-/** Prefer GLM; fall back to lighter hosted models when the key is not entitled for GLM. */
-const PRIMARY_MODEL = (typeof process !== "undefined" && process.env?.CHAT_MODEL) || "z-ai/glm-5.2";
-const FALLBACK_MODELS = [
-  "meta/llama-3.1-8b-instruct",
-  "nvidia/llama-3.1-nemotron-nano-8b-v1",
-];
+const CHAT_URL = "https://integrate.api.nvidia.com/v1/chat/completions";
+const MODEL =
+  (typeof process !== "undefined" && process.env?.CHAT_MODEL) || "meta/llama-3.1-8b-instruct";
 
 function corsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get("Origin") || "";
@@ -56,27 +52,17 @@ function normalizeAuth(header: string): string {
   return token ? `Bearer ${token}` : "";
 }
 
-async function callChat(
-  auth: string,
-  model: string,
-  messages: { role: string; content: string }[]
-): Promise<Response> {
-  return fetch(NVIDIA_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "text/event-stream",
-      Authorization: auth,
-    },
-    body: JSON.stringify({
-      model,
-      messages,
-      temperature: 0.2,
-      top_p: 0.9,
-      max_tokens: 2048,
-      stream: true,
-    }),
-  });
+function publicError(status: number): string {
+  if (status === 401 || status === 403) {
+    return "Session key was rejected. Clear the session, paste a valid key, and Start 10 min again.";
+  }
+  if (status === 429) {
+    return "Too many requests right now. Wait a moment and try again.";
+  }
+  if (status >= 500) {
+    return "The assistant is temporarily unavailable. Try again in a moment.";
+  }
+  return "Could not get an answer. Check your session key and try again.";
 }
 
 export default async (req: Request) => {
@@ -138,40 +124,26 @@ export default async (req: Request) => {
     { role: "user", content: question },
   ];
 
-  const models = [PRIMARY_MODEL, ...FALLBACK_MODELS.filter((m) => m !== PRIMARY_MODEL)];
-  let upstream: Response | null = null;
-  let lastErr = "";
+  // Matches hosted Llama 3.1 8B settings; stream kept on for the live chat UI.
+  const upstream = await fetch(CHAT_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+      Authorization: auth,
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      messages,
+      temperature: 0.2,
+      top_p: 0.7,
+      max_tokens: 1024,
+      stream: true,
+    }),
+  });
 
-  for (const model of models) {
-    const res = await callChat(auth, model, messages);
-    if (res.ok) {
-      upstream = res;
-      break;
-    }
-    lastErr = await res.text().catch(() => res.statusText);
-    // Only cascade on auth/entitlement failures; other errors stop immediately
-    if (res.status !== 403 && res.status !== 404) {
-      upstream = res;
-      break;
-    }
-  }
-
-  if (!upstream || !upstream.ok) {
-    let message = lastErr.slice(0, 280) || "Chat upstream error";
-    try {
-      const parsed = JSON.parse(lastErr);
-      message = parsed.detail || parsed.title || parsed.error || message;
-    } catch {
-      /* keep */
-    }
-    const status = upstream?.status || 403;
-    if (status === 403) {
-      message =
-        "Chat authorization failed for this key on all tried models. " +
-        "On build.nvidia.com open any chat model → Get API Key (enable Public API Endpoints), " +
-        "then Clear the chat session and paste that new key.";
-    }
-    return jsonResponse(req, status, { error: message });
+  if (!upstream.ok) {
+    return jsonResponse(req, upstream.status, { error: publicError(upstream.status) });
   }
 
   const headers = new Headers(corsHeaders(req));
